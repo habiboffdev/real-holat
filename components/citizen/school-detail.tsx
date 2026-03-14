@@ -1,6 +1,6 @@
 'use client'
 
-import { Users } from 'lucide-react'
+import { Users, School as SchoolIcon } from 'lucide-react'
 import { UZ } from '@/lib/constants/uzbek'
 import { PromiseCard } from '@/components/citizen/promise-card'
 import { Card } from '@/components/ui/card'
@@ -26,7 +26,9 @@ export function SchoolDetail({
   inspections = [],
   showInspectButtons = false,
 }: SchoolDetailProps) {
-  const initial = school.name.charAt(0).toUpperCase()
+  // Extract school number from name (e.g., "239" from "239-sonli umumiy...")
+  const schoolNumberMatch = school.name.match(/(\d+)/)
+  const schoolNumber = schoolNumberMatch ? schoolNumberMatch[1] : null
 
   return (
     <div>
@@ -45,7 +47,7 @@ export function SchoolDetail({
             className="rounded-2xl h-52 flex items-center justify-center relative overflow-hidden shadow-[0_8px_30px_rgba(12,27,46,0.15)]"
             style={{
               background:
-                'linear-gradient(135deg, #0c1b2e 0%, #162d4a 40%, #06b6d4 100%)',
+                'linear-gradient(135deg, #0c1b2e 0%, #162d4a 30%, #1a3a5c 60%, rgba(6,182,212,0.2) 100%)',
             }}
           >
             {/* Mesh gradient overlay circles */}
@@ -65,12 +67,17 @@ export function SchoolDetail({
                 left: '10%',
               }}
             />
-            <span
-              className="text-7xl text-white/20 font-extrabold relative z-10"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {initial}
-            </span>
+            {/* Large semi-transparent school number */}
+            {schoolNumber && (
+              <span
+                className="absolute text-[7rem] font-extrabold text-white/[0.07] select-none leading-none"
+                style={{ fontFamily: 'var(--font-heading)', right: '1.5rem', bottom: '0.5rem' }}
+              >
+                {schoolNumber}
+              </span>
+            )}
+            {/* School icon */}
+            <SchoolIcon className="h-16 w-16 text-white/30 relative z-10" strokeWidth={1.5} />
           </div>
         )}
 
