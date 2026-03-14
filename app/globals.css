@@ -116,14 +116,27 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Custom design tokens for Real Holat */
+:root {
+  --primary-deep: #1e3a5f;
+  --primary-light: #2d5a8e;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --muted: #64748b;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    font-size: 18px;
+    @apply font-sans;
+  }
   body {
     @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
   }
 }
