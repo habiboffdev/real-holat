@@ -83,11 +83,10 @@ export async function POST(request: NextRequest) {
   const seedKey = request.headers.get('x-seed-key')
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-  if (!seedKey || seedKey !== serviceRoleKey) {
-    // Also allow in development without a key
-    if (process.env.NODE_ENV !== 'development') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  const isValidKey = seedKey && serviceRoleKey && seedKey.trim() === serviceRoleKey.trim()
+  const isDev = process.env.NODE_ENV === 'development'
+  if (!isValidKey && !isDev) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const supabase = createServiceClient()
