@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { Search, ChevronRight } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 import { UZ } from '@/lib/constants/uzbek'
 import { getHealthColor, type HealthStatus } from '@/lib/utils/health-score'
 
@@ -57,27 +59,27 @@ export function SchoolList({ schools }: SchoolListProps) {
       {/* Search bar */}
       <div className="relative">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/40" />
-        <input
+        <Input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={UZ.browse_search}
-          className="w-full h-13 rounded-2xl pl-12 pr-4 text-[0.95rem] bg-white/70 backdrop-blur-sm border-2 border-border/50 placeholder:text-muted-foreground/40 focus:outline-none focus:border-teal/40 focus:ring-4 focus:ring-teal/10 transition-all duration-200"
+          className="w-full h-13 rounded-2xl pl-12 pr-4 text-[0.95rem] bg-white/70 backdrop-blur-sm border-2 border-border/50 placeholder:text-muted-foreground/40 focus-visible:border-teal/40 focus-visible:ring-teal/10 transition-all duration-200"
         />
       </div>
 
       {/* Filter chips */}
       <div className="flex gap-2 overflow-x-auto py-3 no-scrollbar">
         {filters.map((f) => (
-          <motion.button
+          <Badge
             key={f.key}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveFilter(f.key)}
-            className={`rounded-full px-4.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200 shrink-0 inline-flex items-center gap-2 ${
+            variant={activeFilter === f.key ? 'default' : 'outline'}
+            className={`cursor-pointer rounded-full px-4.5 py-2.5 text-[0.8rem] font-semibold transition-all duration-200 shrink-0 gap-2 h-auto active:scale-95 ${
               activeFilter === f.key
-                ? 'bg-navy text-white shadow-[0_2px_8px_rgba(12,27,46,0.2)]'
-                : 'bg-white/80 text-muted-foreground border border-border/60 hover:border-navy/20 hover:bg-white'
+                ? 'bg-navy text-white shadow-[0_2px_8px_rgba(12,27,46,0.2)] border-navy'
+                : 'bg-white/80 text-muted-foreground border-border/60 hover:border-navy/20 hover:bg-white'
             }`}
+            onClick={() => setActiveFilter(f.key)}
           >
             {f.dotClass && (
               <span
@@ -87,22 +89,18 @@ export function SchoolList({ schools }: SchoolListProps) {
               />
             )}
             {f.label}
-          </motion.button>
+          </Badge>
         ))}
       </div>
 
-      {/* School rows */}
+      {/* School rows - simple CSS animation instead of Framer stagger */}
       {filtered.length > 0 ? (
         <div className="space-y-0.5">
           {filtered.map((school, index) => (
-            <motion.div
+            <div
               key={school.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                delay: Math.min(index * 0.03, 0.3),
-                duration: 0.3,
-              }}
+              className="animate-in fade-in slide-in-from-bottom-1"
+              style={{ animationDelay: `${Math.min(index * 30, 300)}ms`, animationFillMode: 'both' }}
             >
               <Link
                 href={`/citizen/school/${school.id}`}
@@ -127,19 +125,15 @@ export function SchoolList({ schools }: SchoolListProps) {
               {index < filtered.length - 1 && (
                 <div className="ml-7 h-px bg-border/40" />
               )}
-            </motion.div>
+            </div>
           ))}
         </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="glass-card rounded-2xl py-14 text-center"
-        >
+        <Card className="glass-card rounded-2xl py-14 text-center">
           <p className="text-muted-foreground text-[0.9rem]">
             Natija topilmadi
           </p>
-        </motion.div>
+        </Card>
       )}
     </div>
   )

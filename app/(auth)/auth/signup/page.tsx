@@ -154,7 +154,7 @@ export default function SignupPage() {
   const schools = selectedDistrict ? (placeholderSchools[selectedDistrict] || []) : []
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-topo px-4 py-8">
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4 py-8">
       {/* Subtle background pattern */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-navy opacity-[0.03] blur-3xl" />

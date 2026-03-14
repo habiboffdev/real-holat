@@ -1,6 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { getLevel, getProgress } from '@/lib/utils/gamification'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 import { UZ } from '@/lib/constants/uzbek'
 import { SignOutButton } from './sign-out-button'
 
@@ -74,13 +77,13 @@ export default async function ProfilePage() {
             >
               {fullName}
             </h1>
-            <span className="bg-navy/6 text-navy rounded-full px-2.5 py-0.5 text-[0.7rem] font-bold whitespace-nowrap tracking-wide uppercase">
+            <Badge variant="secondary" className="rounded-full px-2.5 py-0.5 text-[0.7rem] font-bold tracking-wide uppercase bg-navy/6 text-navy">
               Fuqaro
-            </span>
+            </Badge>
           </div>
 
           {/* Level badge - premium style */}
-          <div className="mt-2 inline-flex items-center gap-2 glass-card rounded-xl px-3.5 py-2">
+          <Card className="mt-2 inline-flex items-center gap-2 glass-card rounded-xl px-3.5 py-2">
             <span className="text-base leading-none">{level.badge}</span>
             <span
               className="text-navy text-[0.78rem] font-bold tracking-tight"
@@ -88,19 +91,17 @@ export default async function ProfilePage() {
             >
               {level.name}
             </span>
-          </div>
+          </Card>
         </div>
       </div>
 
-      {/* Level progress section */}
+      {/* Level progress section - no shimmer overlay */}
       <div className="space-y-2.5">
         <div className="h-2.5 rounded-full bg-navy/5 overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-teal to-teal-light transition-all duration-700 ease-out relative"
+            className="h-full rounded-full bg-gradient-to-r from-teal to-teal-light transition-all duration-700 ease-out"
             style={{ width: `${progress.percentage}%` }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full" />
-          </div>
+          />
         </div>
         <p className="text-muted-foreground text-[0.78rem] font-medium">
           {progress.current} / {progress.needed} {UZ.profile_inspections}
@@ -108,7 +109,7 @@ export default async function ProfilePage() {
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-border/40" />
+      <Separator />
 
       {/* Inspection history */}
       <div className="space-y-4">
@@ -123,11 +124,11 @@ export default async function ProfilePage() {
         </div>
 
         {!inspections || inspections.length === 0 ? (
-          <div className="glass-card rounded-2xl py-12 px-6 text-center">
+          <Card className="glass-card rounded-2xl py-12 px-6 text-center">
             <p className="text-muted-foreground text-[0.9rem]">
               {UZ.profile_no_inspections}
             </p>
-          </div>
+          </Card>
         ) : (
           <div className="space-y-2.5">
             {inspections.map((inspection) => {
@@ -140,49 +141,51 @@ export default async function ProfilePage() {
               } | null
 
               return (
-                <div
+                <Card
                   key={inspection.id}
-                  className={`glass-card rounded-2xl p-4 flex items-center gap-3.5 border-l-4 ${
+                  className={`glass-card rounded-2xl border-l-4 ${
                     inspection.is_fulfilled ? 'border-l-emerald' : 'border-l-coral'
                   }`}
                 >
-                  {/* Verdict indicator */}
-                  <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                      inspection.is_fulfilled
-                        ? 'bg-emerald/10 text-emerald'
-                        : 'bg-coral/10 text-coral'
-                    }`}
-                  >
-                    {inspection.is_fulfilled ? (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    )}
-                  </div>
+                  <CardContent className="flex items-center gap-3.5">
+                    {/* Verdict indicator */}
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        inspection.is_fulfilled
+                          ? 'bg-emerald/10 text-emerald'
+                          : 'bg-coral/10 text-coral'
+                      }`}
+                    >
+                      {inspection.is_fulfilled ? (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      ) : (
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                      )}
+                    </div>
 
-                  {/* Promise + school info */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[0.88rem] font-semibold text-foreground truncate">
-                      {promise?.title || 'Nomalum'}
-                    </p>
-                    {school?.name && (
-                      <p className="text-muted-foreground text-[0.78rem] truncate mt-0.5">
-                        {school.name}
+                    {/* Promise + school info */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[0.88rem] font-semibold text-foreground truncate">
+                        {promise?.title || 'Nomalum'}
                       </p>
-                    )}
-                  </div>
+                      {school?.name && (
+                        <p className="text-muted-foreground text-[0.78rem] truncate mt-0.5">
+                          {school.name}
+                        </p>
+                      )}
+                    </div>
 
-                  {/* Relative date */}
-                  <span className="text-muted-foreground/60 text-[0.72rem] font-medium whitespace-nowrap shrink-0">
-                    {getRelativeTime(inspection.created_at)}
-                  </span>
-                </div>
+                    {/* Relative date */}
+                    <span className="text-muted-foreground/60 text-[0.72rem] font-medium whitespace-nowrap shrink-0">
+                      {getRelativeTime(inspection.created_at)}
+                    </span>
+                  </CardContent>
+                </Card>
               )
             })}
           </div>

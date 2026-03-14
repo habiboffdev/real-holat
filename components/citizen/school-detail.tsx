@@ -1,9 +1,10 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { Users } from 'lucide-react'
 import { UZ } from '@/lib/constants/uzbek'
 import { PromiseCard } from '@/components/citizen/promise-card'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import type { School } from '@/lib/api/schools'
 
 interface SchoolDetailProps {
@@ -30,12 +31,7 @@ export function SchoolDetail({
   return (
     <div>
       {/* School hero card */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="space-y-4"
-      >
+      <div className="space-y-4">
         {school.image_url ? (
           <div className="rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
             <img
@@ -91,13 +87,13 @@ export function SchoolDetail({
             </p>
           )}
           {school.student_count && (
-            <span className="inline-flex items-center gap-1.5 bg-white/80 backdrop-blur-sm text-navy rounded-full px-3.5 py-1.5 text-[0.8rem] font-medium mt-1 border border-navy/8 shadow-sm">
+            <Badge variant="outline" className="rounded-full px-3.5 py-1.5 text-[0.8rem] font-medium mt-1 gap-1.5 text-navy border-navy/8 bg-white/80 backdrop-blur-sm shadow-sm">
               <Users className="h-3.5 w-3.5 text-navy/60" />
               {school.student_count} o&apos;quvchi
-            </span>
+            </Badge>
           )}
         </div>
-      </motion.div>
+      </div>
 
       {/* Promises heading with accent line */}
       <div className="mt-8 mb-4">
@@ -110,7 +106,7 @@ export function SchoolDetail({
         <div className="h-[3px] w-10 rounded-full bg-teal mt-2" />
       </div>
 
-      {/* Promise cards list */}
+      {/* Promise cards list - simple CSS fade-in instead of Framer stagger */}
       {promises.length > 0 ? (
         <div className="space-y-3.5">
           {promises.map((promise, index) => {
@@ -118,36 +114,26 @@ export function SchoolDetail({
               inspections.find((i) => i.promise_id === promise.id) ?? null
 
             return (
-              <motion.div
+              <div
                 key={promise.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: index * 0.08,
-                  duration: 0.4,
-                  ease: [0.25, 0.46, 0.45, 0.94],
-                }}
+                className="animate-in fade-in slide-in-from-bottom-2"
+                style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'both' }}
               >
                 <PromiseCard
                   promise={promise}
                   lastInspection={lastInspection}
                   showInspectButton={showInspectButtons}
                 />
-              </motion.div>
+              </div>
             )
           })}
         </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="glass-card rounded-2xl py-12 px-6 text-center"
-        >
+        <Card className="glass-card rounded-2xl py-12 px-6 text-center">
           <p className="text-muted-foreground text-[0.95rem]">
             Bu maktab uchun hali va&apos;dalar kiritilmagan
           </p>
-        </motion.div>
+        </Card>
       )}
     </div>
   )

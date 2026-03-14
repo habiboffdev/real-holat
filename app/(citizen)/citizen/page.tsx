@@ -3,6 +3,9 @@ import Link from 'next/link'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { SchoolDetail } from '@/components/citizen/school-detail'
 import { getLevel, getProgress } from '@/lib/utils/gamification'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { UZ } from '@/lib/constants/uzbek'
 
 export default async function CitizenHomePage() {
@@ -83,7 +86,7 @@ export default async function CitizenHomePage() {
         </div>
 
         {/* Level badge - premium style */}
-        <div className="shrink-0 glass-card rounded-2xl px-4 py-2.5 flex flex-col items-center gap-0.5">
+        <Card className="glass-card shrink-0 rounded-2xl px-4 py-2.5 flex flex-col items-center gap-0.5">
           <span className="text-lg leading-none">{level.badge}</span>
           <span
             className="text-navy text-[0.65rem] font-bold tracking-wide whitespace-nowrap"
@@ -91,19 +94,16 @@ export default async function CitizenHomePage() {
           >
             {level.name}
           </span>
-        </div>
+        </Card>
       </div>
 
-      {/* Level progress bar */}
+      {/* Level progress bar - no shimmer overlay */}
       <div className="mb-8">
         <div className="h-2 rounded-full bg-navy/5 overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-teal to-teal-light transition-all duration-700 ease-out relative"
+            className="h-full rounded-full bg-gradient-to-r from-teal to-teal-light transition-all duration-700 ease-out"
             style={{ width: `${progress.percentage}%` }}
-          >
-            {/* Subtle glow/shine on progress */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full" />
-          </div>
+          />
         </div>
         <p className="text-muted-foreground text-[0.72rem] mt-1.5 font-medium">
           {progress.current} / {progress.needed} {UZ.profile_inspections}
@@ -119,7 +119,7 @@ export default async function CitizenHomePage() {
           showInspectButtons
         />
       ) : (
-        <div className="glass-card rounded-2xl p-8 text-center space-y-4 mt-4">
+        <Card className="glass-card rounded-2xl p-8 text-center space-y-4 mt-4">
           <div className="w-16 h-16 rounded-2xl bg-navy/5 flex items-center justify-center mx-auto">
             <svg
               className="h-8 w-8 text-navy/30"
@@ -146,14 +146,15 @@ export default async function CitizenHomePage() {
               Profilingizda maktabni tanlang
             </p>
           </div>
-          <Link
-            href="/citizen/profile"
-            className="inline-flex h-14 items-center justify-center rounded-xl bg-navy text-white font-bold text-[0.95rem] px-8 shadow-[0_4px_14px_rgba(12,27,46,0.2)] hover:shadow-[0_6px_20px_rgba(12,27,46,0.3)] transition-all"
+          <Button
+            className="h-14 rounded-xl bg-navy text-white font-bold text-[0.95rem] px-8 shadow-[0_4px_14px_rgba(12,27,46,0.2)] hover:shadow-[0_6px_20px_rgba(12,27,46,0.3)]"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
-            Maktabni tanlash
-          </Link>
-        </div>
+            <Link href="/citizen/profile">
+              Maktabni tanlash
+            </Link>
+          </Button>
+        </Card>
       )}
     </div>
   )

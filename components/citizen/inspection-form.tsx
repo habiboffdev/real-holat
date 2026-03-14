@@ -9,6 +9,8 @@ import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { UZ } from '@/lib/constants/uzbek'
 import { PhotoUpload } from '@/components/citizen/photo-upload'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 
 interface InspectionFormProps {
   promiseId: string
@@ -162,13 +164,13 @@ export function InspectionForm({
               {UZ.inspect_your_photo}
             </p>
             {localPreview && (
-              <div className="rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.1)]">
+              <Card className="rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.1)] p-0">
                 <img
                   src={localPreview}
                   alt="Inspection photo"
                   className="w-full aspect-[4/3] object-cover"
                 />
-              </div>
+              </Card>
             )}
           </div>
 
@@ -180,15 +182,14 @@ export function InspectionForm({
             {UZ.inspect_question}
           </h2>
 
-          {/* Verdict buttons - stacked with depth */}
+          {/* Verdict buttons */}
           <div className="space-y-3">
             {/* YES button */}
-            <motion.button
+            <Button
               type="button"
-              whileTap={{ scale: 0.97 }}
               onClick={() => setIsFulfilled(true)}
               disabled={phase === 'submitting'}
-              className={`w-full h-14 rounded-xl font-bold text-[1rem] flex items-center justify-center gap-2.5 transition-all duration-250 ${
+              className={`w-full h-14 rounded-xl font-bold text-[1rem] gap-2.5 transition-all duration-250 ${
                 isFulfilled === true
                   ? 'bg-emerald text-white shadow-[0_4px_14px_rgba(16,185,129,0.35)] scale-[1.02]'
                   : 'bg-emerald/6 text-emerald border-2 border-emerald/20 hover:border-emerald/40 hover:bg-emerald/10'
@@ -209,15 +210,14 @@ export function InspectionForm({
                 />
               </div>
               {UZ.inspect_yes}
-            </motion.button>
+            </Button>
 
             {/* NO button */}
-            <motion.button
+            <Button
               type="button"
-              whileTap={{ scale: 0.97 }}
               onClick={() => setIsFulfilled(false)}
               disabled={phase === 'submitting'}
-              className={`w-full h-14 rounded-xl font-bold text-[1rem] flex items-center justify-center gap-2.5 transition-all duration-250 ${
+              className={`w-full h-14 rounded-xl font-bold text-[1rem] gap-2.5 transition-all duration-250 ${
                 isFulfilled === false
                   ? 'bg-coral text-white shadow-[0_4px_14px_rgba(244,63,94,0.35)] scale-[1.02]'
                   : 'bg-coral/6 text-coral border-2 border-coral/20 hover:border-coral/40 hover:bg-coral/10'
@@ -238,7 +238,7 @@ export function InspectionForm({
                 />
               </div>
               {UZ.inspect_no}
-            </motion.button>
+            </Button>
           </div>
 
           {/* Comment */}
@@ -257,22 +257,17 @@ export function InspectionForm({
 
           {/* Error message */}
           {error && (
-            <motion.p
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-coral text-[0.85rem] font-medium bg-coral/5 rounded-xl px-4 py-2.5"
-            >
+            <p className="text-coral text-[0.85rem] font-medium bg-coral/5 rounded-xl px-4 py-2.5">
               {error}
-            </motion.p>
+            </p>
           )}
 
           {/* Submit button */}
-          <motion.button
+          <Button
             type="button"
-            whileTap={{ scale: 0.97 }}
             onClick={handleSubmit}
             disabled={isSubmitDisabled}
-            className={`w-full h-14 rounded-xl bg-navy text-white font-bold text-[1rem] tracking-wide flex items-center justify-center gap-2.5 transition-all duration-200 ${
+            className={`w-full h-14 rounded-xl bg-navy text-white font-bold text-[1rem] tracking-wide gap-2.5 transition-all duration-200 ${
               isSubmitDisabled
                 ? 'opacity-35'
                 : 'opacity-100 shadow-[0_4px_14px_rgba(12,27,46,0.25)] hover:shadow-[0_6px_20px_rgba(12,27,46,0.35)]'
@@ -284,7 +279,7 @@ export function InspectionForm({
             ) : (
               UZ.inspect_submit
             )}
-          </motion.button>
+          </Button>
         </motion.div>
       )}
 
@@ -314,15 +309,12 @@ export function InspectionForm({
           >
             <CheckCircle2 className="h-12 w-12 text-emerald" />
           </motion.div>
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-[1.4rem] font-extrabold text-emerald text-center tracking-tight"
-            style={{ fontFamily: 'var(--font-heading)' }}
+          <p
+            className="text-[1.4rem] font-extrabold text-emerald text-center tracking-tight animate-in fade-in slide-in-from-bottom-2"
+            style={{ fontFamily: 'var(--font-heading)', animationDelay: '200ms', animationFillMode: 'both' }}
           >
             {UZ.inspect_success}
-          </motion.p>
+          </p>
         </motion.div>
       )}
     </AnimatePresence>

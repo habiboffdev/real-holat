@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import {
   Loader2,
@@ -69,7 +70,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-dvh">
       {/* LEFT HALF - Dark navy branding panel (hidden on mobile) */}
-      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-navy bg-topo-dark p-12 lg:flex">
+      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-navy p-12 lg:flex">
         {/* Gradient overlays */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-navy via-navy-light/80 to-navy" />
         <div className="pointer-events-none absolute -bottom-32 -right-32 h-[400px] w-[400px] rounded-full bg-teal opacity-[0.08] blur-[100px]" />
@@ -160,10 +161,10 @@ export default function LoginPage() {
           {/* Demo Buttons */}
           <div className="mt-8 space-y-3">
             <motion.div whileTap={{ scale: 0.98 }}>
-              <button
+              <Button
                 onClick={() => handleDemoLogin('citizen')}
                 disabled={loading !== null}
-                className="group relative flex h-14 w-full items-center gap-3 rounded-2xl bg-gradient-to-r from-teal to-teal-light px-6 text-base font-semibold text-white shadow-lg shadow-teal/25 transition-all hover:shadow-xl hover:shadow-teal/30 hover:brightness-105 active:translate-y-px disabled:pointer-events-none disabled:opacity-60"
+                className="group relative h-14 w-full rounded-2xl bg-gradient-to-r from-teal to-teal-light px-6 text-base font-semibold text-white shadow-lg shadow-teal/25 hover:shadow-xl hover:shadow-teal/30 hover:brightness-105"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {loading === 'citizen' ? (
@@ -175,14 +176,15 @@ export default function LoginPage() {
                     <ArrowRight className="ml-auto h-4 w-4 opacity-60 transition-transform group-hover:translate-x-1" />
                   </>
                 )}
-              </button>
+              </Button>
             </motion.div>
 
             <motion.div whileTap={{ scale: 0.98 }}>
-              <button
+              <Button
+                variant="outline"
                 onClick={() => handleDemoLogin('government')}
                 disabled={loading !== null}
-                className="group relative flex h-14 w-full items-center gap-3 rounded-2xl border-2 border-navy/20 bg-navy/5 px-6 text-base font-semibold text-navy transition-all hover:border-navy/30 hover:bg-navy/10 active:translate-y-px disabled:pointer-events-none disabled:opacity-60"
+                className="group relative h-14 w-full rounded-2xl border-2 border-navy/20 bg-navy/5 px-6 text-base font-semibold text-navy hover:border-navy/30 hover:bg-navy/10"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {loading === 'government' ? (
@@ -194,7 +196,7 @@ export default function LoginPage() {
                     <ArrowRight className="ml-auto h-4 w-4 opacity-60 transition-transform group-hover:translate-x-1" />
                   </>
                 )}
-              </button>
+              </Button>
             </motion.div>
           </div>
 
@@ -218,7 +220,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading !== null}
-                className="h-[52px] rounded-xl border-border px-4 text-base transition-colors focus:border-teal focus:ring-teal"
+                className="h-[52px] rounded-xl border-border px-4 text-base transition-colors focus-visible:border-teal focus-visible:ring-teal"
               />
             </div>
 
@@ -234,7 +236,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading !== null}
-                  className="h-[52px] rounded-xl border-border px-4 pr-12 text-base transition-colors focus:border-teal focus:ring-teal"
+                  className="h-[52px] rounded-xl border-border px-4 pr-12 text-base transition-colors focus-visible:border-teal focus-visible:ring-teal"
                 />
                 <button
                   type="button"
@@ -254,20 +256,16 @@ export default function LoginPage() {
 
             {/* Error message */}
             {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl bg-coral/10 px-4 py-3 text-sm font-medium text-coral ring-1 ring-coral/20"
-              >
+              <div className="rounded-xl bg-coral/10 px-4 py-3 text-sm font-medium text-coral ring-1 ring-coral/20">
                 {error}
-              </motion.div>
+              </div>
             )}
 
             <motion.div whileTap={{ scale: 0.98 }}>
-              <button
+              <Button
                 type="submit"
                 disabled={loading !== null}
-                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-navy text-base font-semibold text-white shadow-md shadow-navy/20 transition-all hover:bg-navy-light hover:shadow-lg active:translate-y-px disabled:pointer-events-none disabled:opacity-60"
+                className="h-14 w-full rounded-2xl bg-navy text-base font-semibold text-white shadow-md shadow-navy/20 hover:bg-navy-light hover:shadow-lg"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {loading === 'login' ? (
@@ -278,7 +276,7 @@ export default function LoginPage() {
                     Kirish
                   </>
                 )}
-              </button>
+              </Button>
             </motion.div>
           </form>
 

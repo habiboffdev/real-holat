@@ -12,6 +12,9 @@ import {
   CheckCircle2,
   Clock,
 } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { UZ } from '@/lib/constants/uzbek'
 
 export interface PromiseCardProps {
@@ -113,95 +116,92 @@ export function PromiseCard({
   const Icon = config.icon
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.01, y: -2 }}
-      whileTap={{ scale: 0.99 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-      className={`glass-card rounded-2xl p-5 space-y-4 border-l-4 ${config.borderColor}`}
-    >
-      {/* Top row: icon pill + title */}
-      <div className="flex items-start gap-3.5">
-        <div
-          className={`w-10 h-10 rounded-xl ${config.iconBg} flex items-center justify-center shrink-0`}
-        >
-          <Icon className={`h-5 w-5 ${config.textColor}`} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3
-            className="text-[1.05rem] font-bold text-foreground leading-snug tracking-tight"
-            style={{ fontFamily: 'var(--font-heading)' }}
+    <Card className={`glass-card border-l-4 ${config.borderColor} rounded-2xl`}>
+      <CardContent className="space-y-4">
+        {/* Top row: icon pill + title */}
+        <div className="flex items-start gap-3.5">
+          <div
+            className={`w-10 h-10 rounded-xl ${config.iconBg} flex items-center justify-center shrink-0`}
           >
-            {config.label}
-          </h3>
-          {promise.description && (
-            <p className="text-muted-foreground text-[0.85rem] leading-relaxed mt-1.5 line-clamp-2">
-              {promise.description}
-            </p>
-          )}
+            <Icon className={`h-5 w-5 ${config.textColor}`} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3
+              className="text-[1.05rem] font-bold text-foreground leading-snug tracking-tight"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {config.label}
+            </h3>
+            {promise.description && (
+              <p className="text-muted-foreground text-[0.85rem] leading-relaxed mt-1.5 line-clamp-2">
+                {promise.description}
+              </p>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Bottom section */}
-      <div className="space-y-3">
-        {/* Status badges */}
-        {promise.status === 'fulfilled' && (
-          <div className="flex items-center gap-2">
-            <div className="inline-flex items-center gap-1.5 bg-emerald/10 text-emerald rounded-full px-3 py-1.5 text-[0.8rem] font-semibold">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              Bajarildi
+        {/* Bottom section */}
+        <div className="space-y-3">
+          {/* Status badges */}
+          {promise.status === 'fulfilled' && (
+            <div className="flex items-center gap-2">
+              <Badge className="bg-emerald/10 text-emerald border-emerald/20 rounded-full px-3 py-1.5 text-[0.8rem] font-semibold gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Bajarildi
+              </Badge>
             </div>
-          </div>
-        )}
-        {promise.status === 'problematic' && (
-          <div className="flex items-center gap-2">
-            <div className="inline-flex items-center gap-1.5 bg-coral/10 text-coral rounded-full px-3 py-1.5 text-[0.8rem] font-semibold">
-              Muammoli
-            </div>
-          </div>
-        )}
-
-        {/* Inspected state */}
-        {lastInspection && (
-          <div className="flex items-center gap-2.5">
-            <div className="inline-flex items-center gap-1.5 bg-emerald/10 text-emerald rounded-full px-3 py-1.5 text-[0.8rem] font-semibold">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              {UZ.home_inspected}
-            </div>
-            <span className="text-muted-foreground text-[0.78rem] flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              {getRelativeTime(lastInspection.created_at)}
-            </span>
-          </div>
-        )}
-
-        {/* Inspect button - the HERO CTA */}
-        {showInspectButton &&
-          !lastInspection &&
-          promise.status !== 'fulfilled' &&
-          promise.status !== 'problematic' && (
-            <motion.div whileTap={{ scale: 0.97 }}>
-              <Link
-                href={`/citizen/inspect/${promise.id}`}
-                className="h-14 w-full rounded-xl bg-teal text-white font-bold text-[0.95rem] tracking-wide flex items-center justify-center gap-2.5 transition-all duration-200 shadow-[0_4px_14px_rgba(6,182,212,0.35)] hover:shadow-[0_6px_20px_rgba(6,182,212,0.45)] hover:bg-teal/95"
-                style={{ fontFamily: 'var(--font-heading)' }}
-              >
-                TEKSHIRING
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 12h14m-7-7 7 7-7 7" />
-                </svg>
-              </Link>
-            </motion.div>
           )}
-      </div>
-    </motion.div>
+          {promise.status === 'problematic' && (
+            <div className="flex items-center gap-2">
+              <Badge variant="destructive" className="rounded-full px-3 py-1.5 text-[0.8rem] font-semibold">
+                Muammoli
+              </Badge>
+            </div>
+          )}
+
+          {/* Inspected state */}
+          {lastInspection && (
+            <div className="flex items-center gap-2.5">
+              <Badge className="bg-emerald/10 text-emerald border-emerald/20 rounded-full px-3 py-1.5 text-[0.8rem] font-semibold gap-1.5">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                {UZ.home_inspected}
+              </Badge>
+              <span className="text-muted-foreground text-[0.78rem] flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {getRelativeTime(lastInspection.created_at)}
+              </span>
+            </div>
+          )}
+
+          {/* Inspect button - the HERO CTA */}
+          {showInspectButton &&
+            !lastInspection &&
+            promise.status !== 'fulfilled' &&
+            promise.status !== 'problematic' && (
+              <motion.div whileTap={{ scale: 0.97 }}>
+                <Link
+                  href={`/citizen/inspect/${promise.id}`}
+                  className="h-14 w-full rounded-xl bg-teal text-white font-bold text-[0.95rem] tracking-wide flex items-center justify-center gap-2.5 transition-all duration-200 shadow-[0_4px_14px_rgba(6,182,212,0.35)] hover:shadow-[0_6px_20px_rgba(6,182,212,0.45)] hover:bg-teal/95"
+                  style={{ fontFamily: 'var(--font-heading)' }}
+                >
+                  TEKSHIRING
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14m-7-7 7 7-7 7" />
+                  </svg>
+                </Link>
+              </motion.div>
+            )}
+        </div>
+      </CardContent>
+    </Card>
   )
 }

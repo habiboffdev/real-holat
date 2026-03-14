@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { motion, useInView } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
 import { ArrowRight, BarChart3, Landmark, User } from 'lucide-react'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0)
@@ -46,7 +48,7 @@ const fadeUp = {
 
 export default function Home() {
   return (
-    <div className="min-h-dvh bg-topo relative overflow-hidden">
+    <div className="min-h-dvh bg-background relative overflow-hidden">
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-5 md:px-12 lg:px-20">
         <div className="flex items-center gap-2">
@@ -60,14 +62,15 @@ export default function Home() {
             Real Holat
           </span>
         </div>
-        <Link
-          href="/auth/login"
-          className="flex items-center gap-2 rounded-xl bg-navy px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-navy-light active:scale-[0.98]"
+        <Button
+          className="rounded-xl bg-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy-light"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
-          Kirish
-          <ArrowRight className="h-4 w-4" />
-        </Link>
+          <Link href="/auth/login" className="flex items-center gap-2">
+            Kirish
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Button>
       </nav>
 
       {/* Hero */}
@@ -123,13 +126,12 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Entry Cards */}
+      {/* Entry Cards - simple CSS animation instead of per-card Framer Motion */}
       <section className="relative z-10 px-6 pb-20 md:px-12 lg:px-20">
         <div className="grid gap-4 md:grid-cols-3 md:gap-6 max-w-4xl">
           {[
             {
               icon: <User className="h-5 w-5" />,
-              emoji: '',
               title: 'Fuqaro',
               description: 'Maktabni tekshiring',
               href: '/auth/login?role=citizen',
@@ -138,7 +140,6 @@ export default function Home() {
             },
             {
               icon: <Landmark className="h-5 w-5" />,
-              emoji: '',
               title: 'Davlat',
               description: 'Hisobotlarni ko\'ring',
               href: '/auth/login?role=government',
@@ -147,7 +148,6 @@ export default function Home() {
             },
             {
               icon: <BarChart3 className="h-5 w-5" />,
-              emoji: '',
               title: 'Jamoatchilik',
               description: 'Ochiq dashboard',
               href: '/dashboard',
@@ -155,12 +155,10 @@ export default function Home() {
               iconBg: 'bg-emerald/10 text-emerald',
             },
           ].map((card, i) => (
-            <motion.div
+            <div
               key={card.title}
-              initial="hidden"
-              animate="visible"
-              custom={3 + i}
-              variants={fadeUp}
+              className="animate-in fade-in slide-in-from-bottom-4"
+              style={{ animationDelay: `${300 + i * 100}ms`, animationFillMode: 'both' }}
             >
               <Link
                 href={card.href}
@@ -185,7 +183,7 @@ export default function Home() {
                   <ArrowRight className="h-4 w-4" />
                 </div>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       </section>
