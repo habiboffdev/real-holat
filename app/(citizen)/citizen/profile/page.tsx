@@ -53,68 +53,83 @@ export default async function ProfilePage() {
   const firstLetter = fullName.charAt(0).toUpperCase()
 
   return (
-    <div className="px-4 pt-6 space-y-6">
+    <div className="px-5 pt-8 space-y-7">
       {/* Top section: avatar + name + level */}
-      <div className="flex items-center gap-4">
-        {/* Avatar */}
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-navy to-navy-light flex items-center justify-center text-white text-2xl font-bold shrink-0"
-          style={{ fontFamily: 'var(--font-heading)' }}
-        >
-          {firstLetter}
+      <div className="flex items-center gap-4.5">
+        {/* Avatar with teal ring */}
+        <div className="relative shrink-0">
+          <div className="w-18 h-18 rounded-full bg-gradient-to-br from-navy to-navy-light flex items-center justify-center text-white text-2xl font-extrabold ring-[3px] ring-teal/30 ring-offset-2 ring-offset-background"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            {firstLetter}
+          </div>
         </div>
 
         <div className="flex-1 min-w-0">
           {/* Name + role */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <h1
-              className="text-[1.2rem] font-bold text-foreground truncate"
+              className="text-[1.25rem] font-extrabold text-foreground truncate tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {fullName}
             </h1>
-            <span className="bg-navy/5 text-navy rounded-full px-2 py-0.5 text-[0.75rem] font-medium whitespace-nowrap">
+            <span className="bg-navy/6 text-navy rounded-full px-2.5 py-0.5 text-[0.7rem] font-bold whitespace-nowrap tracking-wide uppercase">
               Fuqaro
             </span>
           </div>
 
-          {/* Level badge */}
-          <span className="inline-block bg-teal/10 text-teal rounded-full px-3 py-1 text-[0.85rem] font-medium mt-1">
-            {level.badge} {level.name}
-          </span>
+          {/* Level badge - premium style */}
+          <div className="mt-2 inline-flex items-center gap-2 glass-card rounded-xl px-3.5 py-2">
+            <span className="text-base leading-none">{level.badge}</span>
+            <span
+              className="text-navy text-[0.78rem] font-bold tracking-tight"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {level.name}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Level progress section */}
-      <div className="space-y-2">
-        <div className="h-2 rounded-full bg-muted overflow-hidden">
+      <div className="space-y-2.5">
+        <div className="h-2.5 rounded-full bg-navy/5 overflow-hidden">
           <div
-            className="h-full rounded-full bg-teal transition-all duration-500"
+            className="h-full rounded-full bg-gradient-to-r from-teal to-teal-light transition-all duration-700 ease-out relative"
             style={{ width: `${progress.percentage}%` }}
-          />
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full" />
+          </div>
         </div>
-        <p className="text-muted-foreground text-[0.8rem]">
+        <p className="text-muted-foreground text-[0.78rem] font-medium">
           {progress.current} / {progress.needed} {UZ.profile_inspections}
         </p>
       </div>
 
       {/* Divider */}
-      <hr className="border-border/50" />
+      <div className="h-px bg-border/40" />
 
       {/* Inspection history */}
-      <div className="space-y-3">
-        <h2
-          className="text-[1.1rem] font-semibold text-foreground"
-          style={{ fontFamily: 'var(--font-heading)' }}
-        >
-          {UZ.profile_my_reports}
-        </h2>
+      <div className="space-y-4">
+        <div>
+          <h2
+            className="text-[1.1rem] font-bold text-foreground tracking-tight"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            {UZ.profile_my_reports}
+          </h2>
+          <div className="h-[3px] w-8 rounded-full bg-teal mt-2" />
+        </div>
 
         {!inspections || inspections.length === 0 ? (
-          <p className="text-center text-muted-foreground text-[0.9rem] py-8">
-            {UZ.profile_no_inspections}
-          </p>
+          <div className="glass-card rounded-2xl py-12 px-6 text-center">
+            <p className="text-muted-foreground text-[0.9rem]">
+              {UZ.profile_no_inspections}
+            </p>
+          </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {inspections.map((inspection) => {
               const promise = inspection.promises as unknown as {
                 title: string
@@ -127,29 +142,44 @@ export default async function ProfilePage() {
               return (
                 <div
                   key={inspection.id}
-                  className="glass-card rounded-2xl p-4 flex items-center gap-3"
+                  className={`glass-card rounded-2xl p-4 flex items-center gap-3.5 border-l-4 ${
+                    inspection.is_fulfilled ? 'border-l-emerald' : 'border-l-coral'
+                  }`}
                 >
                   {/* Verdict indicator */}
                   <div
-                    className={`w-3 h-3 rounded-full shrink-0 ${
-                      inspection.is_fulfilled ? 'bg-emerald' : 'bg-coral'
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                      inspection.is_fulfilled
+                        ? 'bg-emerald/10 text-emerald'
+                        : 'bg-coral/10 text-coral'
                     }`}
-                  />
+                  >
+                    {inspection.is_fulfilled ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    )}
+                  </div>
 
                   {/* Promise + school info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-[0.9rem] font-medium text-foreground truncate">
+                    <p className="text-[0.88rem] font-semibold text-foreground truncate">
                       {promise?.title || 'Nomalum'}
                     </p>
                     {school?.name && (
-                      <p className="text-muted-foreground text-[0.8rem] truncate">
+                      <p className="text-muted-foreground text-[0.78rem] truncate mt-0.5">
                         {school.name}
                       </p>
                     )}
                   </div>
 
                   {/* Relative date */}
-                  <span className="text-muted-foreground text-[0.75rem] whitespace-nowrap shrink-0">
+                  <span className="text-muted-foreground/60 text-[0.72rem] font-medium whitespace-nowrap shrink-0">
                     {getRelativeTime(inspection.created_at)}
                   </span>
                 </div>
@@ -160,7 +190,9 @@ export default async function ProfilePage() {
       </div>
 
       {/* Sign out button */}
-      <SignOutButton />
+      <div className="pb-4">
+        <SignOutButton />
+      </div>
     </div>
   )
 }

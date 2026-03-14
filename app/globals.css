@@ -173,6 +173,15 @@
     0 20px 60px oklch(0 0 0 / 0.1);
 }
 
+/* Hide scrollbar for filter chips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

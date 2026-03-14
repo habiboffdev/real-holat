@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, Loader2 } from 'lucide-react'
+import { CheckCircle2, Loader2, Check, X } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
@@ -34,11 +34,23 @@ export function InspectionForm({
   // Fire confetti on success
   useEffect(() => {
     if (phase === 'success') {
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } })
+      // Double burst for a bigger celebration
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.7, x: 0.3 },
+      })
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.7, x: 0.7 },
+        })
+      }, 150)
       const timeout = setTimeout(() => {
         router.push('/citizen')
         router.refresh()
-      }, 1500)
+      }, 1800)
       return () => clearTimeout(timeout)
     }
   }, [phase, router])
@@ -123,13 +135,13 @@ export function InspectionForm({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <PhotoUpload
             onPhotoReady={handlePhotoReady}
             onError={handlePhotoError}
             autoTrigger={true}
-            promptText={`\ud83d\udcf7 ${promiseTitle} ${UZ.inspect_take_photo}`}
+            promptText={`${promiseTitle} ${UZ.inspect_take_photo}`}
           />
         </motion.div>
       )}
@@ -141,73 +153,117 @@ export function InspectionForm({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="space-y-5"
         >
           {/* Photo preview */}
-          <p className="text-muted-foreground text-[0.85rem] mb-2">
-            {UZ.inspect_your_photo}
-          </p>
-          {localPreview && (
-            <img
-              src={localPreview}
-              alt="Inspection photo"
-              className="w-full rounded-2xl aspect-[4/3] object-cover"
-            />
-          )}
+          <div>
+            <p className="text-muted-foreground text-[0.82rem] font-medium mb-2.5">
+              {UZ.inspect_your_photo}
+            </p>
+            {localPreview && (
+              <div className="rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.1)]">
+                <img
+                  src={localPreview}
+                  alt="Inspection photo"
+                  className="w-full aspect-[4/3] object-cover"
+                />
+              </div>
+            )}
+          </div>
 
           {/* Verdict question */}
           <h2
-            className="text-[1.2rem] font-semibold text-foreground mt-5 mb-3"
+            className="text-[1.25rem] font-extrabold text-foreground tracking-tight"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
             {UZ.inspect_question}
           </h2>
 
-          {/* YES button */}
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.97 }}
-            onClick={() => setIsFulfilled(true)}
-            disabled={phase === 'submitting'}
-            className={`w-full h-14 rounded-xl font-bold text-[1rem] flex items-center justify-center gap-2 transition-all duration-200 ${
-              isFulfilled === true
-                ? 'bg-emerald text-white ring-2 ring-emerald/50 scale-[1.02]'
-                : 'bg-emerald/10 text-emerald border border-emerald/30'
-            }`}
-          >
-            \u2705 {UZ.inspect_yes}
-          </motion.button>
+          {/* Verdict buttons - stacked with depth */}
+          <div className="space-y-3">
+            {/* YES button */}
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setIsFulfilled(true)}
+              disabled={phase === 'submitting'}
+              className={`w-full h-14 rounded-xl font-bold text-[1rem] flex items-center justify-center gap-2.5 transition-all duration-250 ${
+                isFulfilled === true
+                  ? 'bg-emerald text-white shadow-[0_4px_14px_rgba(16,185,129,0.35)] scale-[1.02]'
+                  : 'bg-emerald/6 text-emerald border-2 border-emerald/20 hover:border-emerald/40 hover:bg-emerald/10'
+              }`}
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  isFulfilled === true
+                    ? 'bg-white/25'
+                    : 'border-2 border-emerald/30'
+                }`}
+              >
+                <Check
+                  className={`h-3.5 w-3.5 transition-opacity duration-200 ${
+                    isFulfilled === true ? 'opacity-100 text-white' : 'opacity-0'
+                  }`}
+                />
+              </div>
+              {UZ.inspect_yes}
+            </motion.button>
 
-          {/* NO button */}
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.97 }}
-            onClick={() => setIsFulfilled(false)}
-            disabled={phase === 'submitting'}
-            className={`w-full h-14 rounded-xl font-bold text-[1rem] flex items-center justify-center gap-2 mt-3 transition-all duration-200 ${
-              isFulfilled === false
-                ? 'bg-coral text-white ring-2 ring-coral/50 scale-[1.02]'
-                : 'bg-coral/10 text-coral border border-coral/30'
-            }`}
-          >
-            \u274c {UZ.inspect_no}
-          </motion.button>
+            {/* NO button */}
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setIsFulfilled(false)}
+              disabled={phase === 'submitting'}
+              className={`w-full h-14 rounded-xl font-bold text-[1rem] flex items-center justify-center gap-2.5 transition-all duration-250 ${
+                isFulfilled === false
+                  ? 'bg-coral text-white shadow-[0_4px_14px_rgba(244,63,94,0.35)] scale-[1.02]'
+                  : 'bg-coral/6 text-coral border-2 border-coral/20 hover:border-coral/40 hover:bg-coral/10'
+              }`}
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              <div
+                className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  isFulfilled === false
+                    ? 'bg-white/25'
+                    : 'border-2 border-coral/30'
+                }`}
+              >
+                <X
+                  className={`h-3.5 w-3.5 transition-opacity duration-200 ${
+                    isFulfilled === false ? 'opacity-100 text-white' : 'opacity-0'
+                  }`}
+                />
+              </div>
+              {UZ.inspect_no}
+            </motion.button>
+          </div>
 
           {/* Comment */}
-          <label className="block text-muted-foreground text-[0.85rem] mt-4 mb-1.5">
-            {UZ.inspect_comment_label}
-          </label>
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder={UZ.inspect_comment_placeholder}
-            disabled={phase === 'submitting'}
-            className="w-full h-20 rounded-xl border border-border bg-background px-3 py-2 text-base placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-teal/30 resize-none disabled:opacity-50"
-          />
+          <div>
+            <label className="block text-muted-foreground text-[0.82rem] font-medium mb-2">
+              {UZ.inspect_comment_label}
+            </label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder={UZ.inspect_comment_placeholder}
+              disabled={phase === 'submitting'}
+              className="w-full h-24 rounded-xl border-2 border-border/60 bg-white/60 backdrop-blur-sm px-4 py-3 text-base placeholder:text-muted-foreground/40 focus:outline-none focus:border-teal/40 focus:ring-4 focus:ring-teal/10 resize-none disabled:opacity-50 transition-all duration-200"
+            />
+          </div>
 
           {/* Error message */}
           {error && (
-            <p className="text-coral text-[0.85rem] mt-2">{error}</p>
+            <motion.p
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-coral text-[0.85rem] font-medium bg-coral/5 rounded-xl px-4 py-2.5"
+            >
+              {error}
+            </motion.p>
           )}
 
           {/* Submit button */}
@@ -216,16 +272,17 @@ export function InspectionForm({
             whileTap={{ scale: 0.97 }}
             onClick={handleSubmit}
             disabled={isSubmitDisabled}
-            className={`w-full h-14 rounded-xl bg-navy text-white font-bold text-[1rem] flex items-center justify-center gap-2 mt-4 transition-opacity ${
-              isSubmitDisabled ? 'opacity-40' : 'opacity-100'
+            className={`w-full h-14 rounded-xl bg-navy text-white font-bold text-[1rem] tracking-wide flex items-center justify-center gap-2.5 transition-all duration-200 ${
+              isSubmitDisabled
+                ? 'opacity-35'
+                : 'opacity-100 shadow-[0_4px_14px_rgba(12,27,46,0.25)] hover:shadow-[0_6px_20px_rgba(12,27,46,0.35)]'
             }`}
+            style={{ fontFamily: 'var(--font-heading)' }}
           >
             {phase === 'submitting' ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
-              <>
-                \ud83d\udce4 {UZ.inspect_submit}
-              </>
+              UZ.inspect_submit
             )}
           </motion.button>
         </motion.div>
@@ -235,19 +292,37 @@ export function InspectionForm({
       {phase === 'success' && (
         <motion.div
           key="success"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25 }}
-          className="flex flex-col items-center justify-center py-20 gap-4"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{
+            duration: 0.4,
+            ease: [0.25, 0.46, 0.45, 0.94],
+          }}
+          className="flex flex-col items-center justify-center py-24 gap-5"
         >
-          <CheckCircle2 className="h-16 w-16 text-emerald" />
-          <p
-            className="text-[1.3rem] font-semibold text-emerald text-center"
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{
+              type: 'spring',
+              stiffness: 300,
+              damping: 15,
+              delay: 0.1,
+            }}
+            className="w-20 h-20 rounded-full bg-emerald/10 flex items-center justify-center"
+          >
+            <CheckCircle2 className="h-12 w-12 text-emerald" />
+          </motion.div>
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-[1.4rem] font-extrabold text-emerald text-center tracking-tight"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
             {UZ.inspect_success}
-          </p>
+          </motion.p>
         </motion.div>
       )}
     </AnimatePresence>
