@@ -6,6 +6,7 @@ import { getLevel, getProgress } from '@/lib/utils/gamification'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Progress, ProgressLabel, ProgressValue } from '@/components/ui/progress'
 import { UZ } from '@/lib/constants/uzbek'
 import { Building2 } from 'lucide-react'
 
@@ -81,12 +82,10 @@ export default async function CitizenHomePage() {
       {/* Progress bar */}
       {totalCount > 0 && (
         <div className="mb-6">
-          <div className="h-1.5 rounded-full bg-border overflow-hidden">
-            <div
-              className="h-full rounded-full bg-teal transition-all duration-700"
-              style={{ width: `${totalCount > 0 ? (inspectedCount / totalCount) * 100 : 0}%` }}
-            />
-          </div>
+          <Progress value={totalCount > 0 ? (inspectedCount / totalCount) * 100 : 0}>
+            <ProgressLabel>{UZ.profile_inspections}</ProgressLabel>
+            <ProgressValue />
+          </Progress>
         </div>
       )}
 
