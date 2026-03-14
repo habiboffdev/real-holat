@@ -1,9 +1,8 @@
 'use client'
 
-import { Users, School as SchoolIcon } from 'lucide-react'
+import { MapPin, Users } from 'lucide-react'
 import { UZ } from '@/lib/constants/uzbek'
 import { PromiseCard } from '@/components/citizen/promise-card'
-import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { School } from '@/lib/api/schools'
 
@@ -26,122 +25,82 @@ export function SchoolDetail({
   inspections = [],
   showInspectButtons = false,
 }: SchoolDetailProps) {
-  // Extract school number from name (e.g., "239" from "239-sonli umumiy...")
-  const schoolNumberMatch = school.name.match(/(\d+)/)
-  const schoolNumber = schoolNumberMatch ? schoolNumberMatch[1] : null
+  const schoolNumber = school.name.match(/(\d+)/)?.[1]
 
   return (
-    <div>
-      {/* School hero card */}
-      <div className="space-y-4">
-        {school.image_url ? (
-          <div className="rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
-            <img
-              src={school.image_url}
-              alt={school.name}
-              className="h-52 w-full object-cover"
-            />
+    <div className="space-y-6">
+      {/* School card — compact, informational, no giant hero */}
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="flex items-start gap-4">
+          {/* School number badge */}
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-navy text-white">
+            <span
+              className="text-xl font-bold"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {schoolNumber || '#'}
+            </span>
           </div>
-        ) : (
-          <div
-            className="rounded-2xl h-52 flex items-center justify-center relative overflow-hidden shadow-[0_8px_30px_rgba(12,27,46,0.15)]"
-            style={{
-              background:
-                'linear-gradient(135deg, #0c1b2e 0%, #162d4a 30%, #1a3a5c 60%, rgba(6,182,212,0.2) 100%)',
-            }}
-          >
-            {/* Mesh gradient overlay circles */}
-            <div
-              className="absolute w-64 h-64 rounded-full opacity-20 blur-3xl"
-              style={{
-                background: '#06b6d4',
-                top: '-30%',
-                right: '-10%',
-              }}
-            />
-            <div
-              className="absolute w-48 h-48 rounded-full opacity-15 blur-3xl"
-              style={{
-                background: '#22d3ee',
-                bottom: '-20%',
-                left: '10%',
-              }}
-            />
-            {/* Large semi-transparent school number */}
-            {schoolNumber && (
-              <span
-                className="absolute text-[7rem] font-extrabold text-white/[0.07] select-none leading-none"
-                style={{ fontFamily: 'var(--font-heading)', right: '1.5rem', bottom: '0.5rem' }}
-              >
-                {schoolNumber}
-              </span>
-            )}
-            {/* School icon */}
-            <SchoolIcon className="h-16 w-16 text-white/30 relative z-10" strokeWidth={1.5} />
-          </div>
-        )}
 
-        <div className="space-y-2">
-          <h2
-            className="text-[1.4rem] font-extrabold text-foreground tracking-tight leading-tight"
-            style={{ fontFamily: 'var(--font-heading)' }}
-          >
-            {school.name}
-          </h2>
-          {school.district && (
-            <p className="text-muted-foreground text-[0.9rem]">
-              {school.district}
-            </p>
-          )}
-          {school.student_count && (
-            <Badge variant="outline" className="rounded-full px-3.5 py-1.5 text-[0.8rem] font-medium mt-1 gap-1.5 text-navy border-navy/8 bg-white/80 backdrop-blur-sm shadow-sm">
-              <Users className="h-3.5 w-3.5 text-navy/60" />
-              {school.student_count} o&apos;quvchi
-            </Badge>
-          )}
+          <div className="min-w-0 flex-1">
+            <h2
+              className="text-[1.15rem] font-bold leading-snug tracking-tight text-foreground"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {school.name}
+            </h2>
+
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {school.district && (
+                <Badge variant="outline" className="gap-1 rounded-lg text-[0.75rem] font-normal text-muted-foreground">
+                  <MapPin className="h-3 w-3" />
+                  {school.district}
+                </Badge>
+              )}
+              {school.student_count && (
+                <Badge variant="outline" className="gap-1 rounded-lg text-[0.75rem] font-normal text-muted-foreground">
+                  <Users className="h-3 w-3" />
+                  {school.student_count} o&apos;quvchi
+                </Badge>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Promises heading with accent line */}
-      <div className="mt-8 mb-4">
+      {/* Promises section */}
+      <div>
         <h3
-          className="text-[1.1rem] font-bold text-foreground"
+          className="mb-3 text-[0.95rem] font-semibold text-foreground"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
           {UZ.home_promises_heading}
         </h3>
-        <div className="h-[3px] w-10 rounded-full bg-teal mt-2" />
-      </div>
 
-      {/* Promise cards list - simple CSS fade-in instead of Framer stagger */}
-      {promises.length > 0 ? (
-        <div className="space-y-3.5">
-          {promises.map((promise, index) => {
-            const lastInspection =
-              inspections.find((i) => i.promise_id === promise.id) ?? null
+        {promises.length > 0 ? (
+          <div className="space-y-3">
+            {promises.map((promise) => {
+              const lastInspection =
+                inspections.find((i) => i.promise_id === promise.id) ?? null
 
-            return (
-              <div
-                key={promise.id}
-                className="animate-in fade-in slide-in-from-bottom-2"
-                style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'both' }}
-              >
+              return (
                 <PromiseCard
+                  key={promise.id}
                   promise={promise}
                   lastInspection={lastInspection}
                   showInspectButton={showInspectButtons}
                 />
-              </div>
-            )
-          })}
-        </div>
-      ) : (
-        <Card className="glass-card rounded-2xl py-12 px-6 text-center">
-          <p className="text-muted-foreground text-[0.95rem]">
-            Bu maktab uchun hali va&apos;dalar kiritilmagan
-          </p>
-        </Card>
-      )}
+              )
+            })}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-border py-10 text-center">
+            <p className="text-[0.9rem] text-muted-foreground">
+              Bu maktab uchun hali va&apos;dalar kiritilmagan
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
