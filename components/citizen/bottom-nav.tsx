@@ -8,7 +8,6 @@ import { UZ } from '@/lib/constants/uzbek'
 
 const tabs = [
   { label: UZ.nav_home, icon: Home, path: '/citizen', exact: true },
-  { label: UZ.nav_map, icon: MapPin, path: '/citizen/map', exact: false },
   { label: UZ.nav_report, icon: BarChart3, path: '/dashboard', exact: false },
   { label: UZ.nav_profile, icon: User, path: '/citizen/profile', exact: false },
 ] as const

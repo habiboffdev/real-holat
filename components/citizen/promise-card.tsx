@@ -79,48 +79,52 @@ export function PromiseCard({ promise, lastInspection, showInspectButton = false
               </p>
             )}
 
-            {/* Status row */}
-            <div className="mt-3 flex items-center gap-2 pl-[30px]">
-              {promise.status === 'fulfilled' && (
+            {/* Status row bg-emerald/10 text-emerald */}
+            <div className="mt-3 flex flex-wrap items-center gap-2 pl-[30px]">
+              {promise.status === 'fulfilled' ? (
                 <Badge className="gap-1 rounded-md bg-emerald/10 text-emerald text-[0.72rem] font-medium border-0">
                   <CheckCircle2 className="h-3 w-3" />
                   Bajarildi
                 </Badge>
-              )}
-              {promise.status === 'problematic' && (
+              ) : promise.status === 'problematic' ? (
                 <Badge variant="destructive" className="rounded-md text-[0.72rem]">
                   Muammoli
                 </Badge>
-              )}
+              ) : isInspected ? (
+                // 🚀 $10B UX: The "Under Review" State
+                <Badge className="gap-1.5 rounded-md bg-amber/10 text-amber-700 text-[0.72rem] font-medium border border-amber/20 overflow-hidden relative">
+                  <span className="absolute inset-0 w-full h-full bg-amber/10 -translate-x-full animate-[shimmer_2s_infinite]" />
+                  <Clock className="h-3 w-3 animate-pulse" />
+                  Tekshirilmoqda
+                </Badge>
+              ) : null}
+
               {isInspected && (
-                <>
-                  <Badge className="gap-1 rounded-md bg-emerald/10 text-emerald text-[0.72rem] font-medium border-0">
-                    <CheckCircle2 className="h-3 w-3" />
-                    {UZ.home_inspected}
-                  </Badge>
-                  <span className="flex items-center gap-1 text-[0.72rem] text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    {relativeTime(lastInspection!.created_at)}
-                  </span>
-                </>
+                <span className="flex items-center gap-1 text-[0.72rem] text-muted-foreground ml-auto">
+                  {relativeTime(lastInspection!.created_at)} yuborildi
+                </span>
               )}
             </div>
           </div>
 
-          {/* Right action area */}
+          {/* Right action area — MASSIVE TAP TARGET for 70yo users */}
           {canInspect && (
             <Link
               href={`/citizen/inspect/${promise.id}`}
-              className="flex w-[72px] shrink-0 flex-col items-center justify-center gap-1 border-l border-border bg-teal/[0.04] text-teal transition-colors hover:bg-teal/[0.08]"
+              className="flex w-[88px] shrink-0 flex-col items-center justify-center gap-2 border-l-2 border-border bg-gradient-to-b from-teal/[0.05] to-teal/[0.12] text-teal transition-all active:bg-teal/20"
             >
-              <Camera className="h-5 w-5" />
-              <span className="text-[0.6rem] font-bold uppercase tracking-wider">Tekshir</span>
+              <div className="rounded-full bg-white p-2.5 shadow-sm border border-teal/20">
+                <Camera className="h-6 w-6" />
+              </div>
+              <span className="text-[0.68rem] font-bold uppercase tracking-wider text-center leading-tight px-1 text-navy">
+                Rasmini<br/>Olish
+              </span>
             </Link>
           )}
 
           {isInspected && !canInspect && (
-            <div className="flex w-[52px] shrink-0 items-center justify-center border-l border-border">
-              <ChevronRight className="h-4 w-4 text-muted-foreground/40" />
+            <div className="flex w-[60px] shrink-0 items-center justify-center border-l border-border bg-muted/20">
+              <ChevronRight className="h-5 w-5 text-muted-foreground/40" />
             </div>
           )}
         </div>

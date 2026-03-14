@@ -29,13 +29,25 @@ export function SchoolDetail({
 
   return (
     <div className="space-y-6">
-      {/* School card — compact, informational, no giant hero */}
-      <div className="rounded-2xl border border-border bg-card p-5">
-        <div className="flex items-start gap-4">
+      {/* School hero card — gradient with watermark */}
+      <div className="rounded-2xl bg-gradient-to-br from-navy to-navy-light p-6 text-white relative overflow-hidden">
+        {/* Watermark school number */}
+        {schoolNumber && (
+          <span
+            className="pointer-events-none absolute -bottom-4 -right-2 text-[8rem] font-black text-white/[0.06] leading-none select-none"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            {schoolNumber}
+          </span>
+        )}
+        {/* Decorative glow */}
+        <div className="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full bg-teal opacity-[0.12] blur-[50px]" />
+
+        <div className="relative z-10 flex items-start gap-4">
           {/* School number badge */}
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-navy text-white">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm border border-white/10">
             <span
-              className="text-xl font-bold"
+              className="text-xl font-bold text-white"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {schoolNumber || '#'}
@@ -44,7 +56,7 @@ export function SchoolDetail({
 
           <div className="min-w-0 flex-1">
             <h2
-              className="text-[1.15rem] font-bold leading-snug tracking-tight text-foreground"
+              className="text-[1.15rem] font-bold leading-snug tracking-tight text-white"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {school.name}
@@ -52,13 +64,13 @@ export function SchoolDetail({
 
             <div className="mt-2 flex flex-wrap items-center gap-2">
               {school.district && (
-                <Badge variant="outline" className="gap-1 rounded-lg text-[0.75rem] font-normal text-muted-foreground">
+                <Badge className="gap-1 rounded-lg text-[0.75rem] font-normal bg-white/10 text-white/80 border-0 hover:bg-white/15">
                   <MapPin className="h-3 w-3" />
                   {school.district}
                 </Badge>
               )}
               {school.student_count && (
-                <Badge variant="outline" className="gap-1 rounded-lg text-[0.75rem] font-normal text-muted-foreground">
+                <Badge className="gap-1 rounded-lg text-[0.75rem] font-normal bg-white/10 text-white/80 border-0 hover:bg-white/15">
                   <Users className="h-3 w-3" />
                   {school.student_count} o&apos;quvchi
                 </Badge>
@@ -71,10 +83,10 @@ export function SchoolDetail({
       {/* Promises section */}
       <div>
         <h3
-          className="mb-3 text-[0.95rem] font-semibold text-foreground"
+          className="mb-3 text-[1.05rem] font-bold text-navy"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
-          {UZ.home_promises_heading}
+          Maktab holati va muammolari
         </h3>
 
         {promises.length > 0 ? (

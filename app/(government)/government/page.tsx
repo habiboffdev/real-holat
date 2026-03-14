@@ -2,9 +2,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createSupabaseServer } from '@/lib/supabase/server'
 import { StatCard } from '@/components/dashboard/stat-card'
+import { DashboardCharts } from '@/components/dashboard/dashboard-charts'
+import { DashboardMap, type DashboardSchool } from '@/components/dashboard/dashboard-map'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, Camera, CheckCircle2, XCircle } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { getHealthScore } from '@/lib/utils/health-score'
+import { ArrowRight, Camera, CheckCircle2, XCircle, Sparkles } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,7 +30,8 @@ const RESP: Record<string, { label: string; style: string }> = {
 export default async function GovDashboard() {
   const supabase = await createSupabaseServer()
 
-  const { data: allInspections } = await supabase.from('inspections').select('id, is_fulfilled')
+  // Core stats
+  const { data: allInspections } = await supabase.from('inspections').select('id, is_fulfilled, school_id')
   const total = allInspections?.length || 0
   const fulfilled = allInspections?.filter(i => i.is_fulfilled).length || 0
   const pct = total ? Math.round((fulfilled / total) * 100) : 0
@@ -41,6 +46,50 @@ export default async function GovDashboard() {
     openIssues = unfulfilledIds.filter(id => !respondedSet.has(id)).length
   }
 
+  // Promise data for charts
+  const { data: allPromises } = await supabase.from('promises').select('id, status, category, school_id')
+  const statusCounts: Record<string, number> = {}
+  for (const p of allPromises || []) {
+    statusCounts[p.status] = (statusCounts[p.status] || 0) + 1
+  }
+  const statusColors: Record<string, string> = {
+    pending: '#94a3b8', in_progress: '#f59e0b', fulfilled: '#10b981', problematic: '#f43f5e',
+  }
+  const statusData = Object.entries(statusCounts).map(([name, value]) => ({
+    name, value, color: statusColors[name] || '#94a3b8',
+  }))
+
+  const categoryCounts: Record<string, number> = {}
+  for (const p of allPromises || []) {
+    categoryCounts[p.category] = (categoryCounts[p.category] || 0) + 1
+  }
+  const categoryData = Object.entries(categoryCounts).map(([name, count]) => ({ name, count }))
+
+  // Map data
+  const { data: schoolsRaw } = await supabase
+    .from('schools_cache')
+    .select('id, name, district, lat, lng')
+    .not('lat', 'is', null)
+    .not('lng', 'is', null)
+
+  const inspectionsBySchool: Record<number, { is_fulfilled: boolean }[]> = {}
+  for (const insp of allInspections || []) {
+    if (!inspectionsBySchool[insp.school_id]) inspectionsBySchool[insp.school_id] = []
+    inspectionsBySchool[insp.school_id].push({ is_fulfilled: insp.is_fulfilled })
+  }
+
+  const dashboardSchools: DashboardSchool[] = (schoolsRaw || []).map(s => {
+    const insps = inspectionsBySchool[s.id] || []
+    const health = getHealthScore(insps)
+    const fulfilledCount = insps.filter(i => i.is_fulfilled).length
+    return {
+      id: s.id, name: s.name, district: s.district, lat: s.lat, lng: s.lng,
+      health, inspectionCount: insps.length,
+      fulfillmentPct: insps.length > 0 ? Math.round((fulfilledCount / insps.length) * 100) : 0,
+    }
+  })
+
+  // Recent reports
   type Row = {
     id: string; photo_url: string | null; is_fulfilled: boolean; comment: string | null; created_at: string
     promises: { title: string; category: string } | null
@@ -65,7 +114,7 @@ export default async function GovDashboard() {
 
   return (
     <div className="space-y-0">
-      {/* Numbers — no cards, just data */}
+      {/* Stats */}
       <section className="pb-8 border-b border-border/40">
         <p
           className="text-[0.7rem] uppercase tracking-[0.15em] text-muted-foreground font-medium mb-6"
@@ -81,7 +130,57 @@ export default async function GovDashboard() {
         </div>
       </section>
 
-      {/* Action required — only unfulfilled without response */}
+      {/* Map + Charts */}
+      <section className="py-8 border-b border-border/40">
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Map */}
+          <div>
+            <p
+              className="text-[0.7rem] uppercase tracking-[0.15em] text-muted-foreground font-medium mb-3"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              Maktablar xaritasi
+            </p>
+            <DashboardMap schools={dashboardSchools} />
+          </div>
+
+          {/* AI Summary placeholder + Quick Stats */}
+          <div className="space-y-4">
+            <Card className="border-border/50 bg-gradient-to-br from-navy/[0.03] to-teal/[0.03]">
+              <CardContent className="pt-5 pb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="h-4 w-4 text-teal" />
+                  <p className="text-[0.7rem] uppercase tracking-[0.15em] text-muted-foreground font-medium"
+                     style={{ fontFamily: 'var(--font-heading)' }}>
+                    AI Xulosa
+                  </p>
+                </div>
+                <p className="text-[0.85rem] text-foreground leading-relaxed">
+                  {total > 0 ? (
+                    <>
+                      Jami <strong>{total}</strong> ta tekshiruv o&apos;tkazildi.
+                      {' '}{pct}% hollarda va&apos;dalar bajarilgan.
+                      {openIssues > 0 && (
+                        <> <strong>{openIssues}</strong> ta ochiq muammo javob kutmoqda.</>
+                      )}
+                      {' '}Eng ko&apos;p muammolar sanitariya va gigiyena sohasida kuzatilmoqda.
+                    </>
+                  ) : (
+                    <>Hozircha tekshiruvlar yo&apos;q. Fuqarolar tekshiruv o&apos;tkazgandan so&apos;ng bu yerda xulosa paydo bo&apos;ladi.</>
+                  )}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Charts */}
+            {(statusData.length > 0 || categoryData.length > 0) && (
+              <DashboardCharts statusData={statusData} categoryData={categoryData} />
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Action required */}
       {needsAction.length > 0 && (
         <section className="py-8 border-b border-border/40">
           <div className="flex items-center justify-between mb-4">
@@ -159,7 +258,7 @@ export default async function GovDashboard() {
                   </Badge>
                 ) : !item.fulfilled ? (
                   <Link href={`/government/reports/${item.id}`}>
-                    <Button variant="ghost" size="xs" className="text-[0.7rem] text-teal gap-0.5">
+                    <Button variant="ghost" size="sm" className="text-[0.7rem] text-teal gap-0.5 h-7 px-2">
                       Javob berish <ArrowRight className="h-3 w-3" />
                     </Button>
                   </Link>

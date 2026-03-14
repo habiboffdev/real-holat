@@ -1,59 +1,52 @@
-'use client'
-
 import Link from 'next/link'
-import { motion, useInView } from 'framer-motion'
-import { useRef, useEffect, useState } from 'react'
-import { ArrowRight, BarChart3, Landmark, User } from 'lucide-react'
+import { ArrowRight, BarChart3, Camera, CheckCircle2, Landmark, MapPin, ShieldCheck, User } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { createSupabaseServer } from '@/lib/supabase/server'
+import { AnimatedLandingHero } from '@/components/landing/animated-hero'
 
-function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: string }) {
-  const [count, setCount] = useState(0)
-  const ref = useRef<HTMLSpanElement>(null)
-  const isInView = useInView(ref, { once: true })
+export default async function Home() {
+  // Fetch live stats from Supabase
+  const supabase = await createSupabaseServer()
+  const { count: schoolCount } = await supabase
+    .from('schools_cache')
+    .select('*', { count: 'exact', head: true })
 
-  useEffect(() => {
-    if (!isInView) return
-    let start = 0
-    const duration = 1600
-    const increment = target / (duration / 16)
-    const timer = setInterval(() => {
-      start += increment
-      if (start >= target) {
-        setCount(target)
-        clearInterval(timer)
-      } else {
-        setCount(Math.floor(start))
-      }
-    }, 16)
-    return () => clearInterval(timer)
-  }, [isInView, target])
+  const { count: inspectionCount } = await supabase
+    .from('inspections')
+    .select('*', { count: 'exact', head: true })
 
-  return (
-    <span ref={ref}>
-      {count}
-      {suffix}
-    </span>
-  )
-}
+  const { data: inspections } = await supabase
+    .from('inspections')
+    .select('school_id')
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
-  }),
-}
+  const uniqueDistricts = new Set<string>()
+  // Fetch distinct districts from schools that have inspections
+  const schoolIds = new Set((inspections || []).map(i => i.school_id))
+  if (schoolIds.size > 0) {
+    const { data: schools } = await supabase
+      .from('schools_cache')
+      .select('district')
+      .in('id', Array.from(schoolIds))
+    for (const s of schools || []) {
+      if (s.district) uniqueDistricts.add(s.district)
+    }
+  }
 
-export default function Home() {
+  const stats = [
+    { value: schoolCount || 0, suffix: '+', label: 'maktab' },
+    { value: inspectionCount || 0, suffix: '+', label: 'tekshiruv' },
+    { value: Math.max(uniqueDistricts.size, 1), suffix: '', label: 'tuman' },
+  ]
+
   return (
     <div className="min-h-dvh bg-background relative overflow-hidden">
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-5 md:px-12 lg:px-20">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-navy flex items-center justify-center">
-            <span className="text-teal-light font-bold text-sm" style={{ fontFamily: 'var(--font-heading)' }}>R</span>
+            <ShieldCheck className="h-4 w-4 text-teal-light" />
           </div>
           <span
             className="text-xl font-bold tracking-tight text-navy"
@@ -62,105 +55,198 @@ export default function Home() {
             Real Holat
           </span>
         </div>
-        <Button
-          className="rounded-xl bg-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy-light"
-          style={{ fontFamily: 'var(--font-heading)' }}
-        >
-          <Link href="/auth/login" className="flex items-center gap-2">
-            Kirish
-            <ArrowRight className="h-4 w-4" />
+        <div className="flex items-center gap-3">
+          <Link href="/dashboard">
+            <Badge variant="outline" className="hidden sm:inline-flex gap-1.5 cursor-pointer hover:bg-muted transition-colors">
+              <BarChart3 className="h-3 w-3" />
+              Ochiq dashboard
+            </Badge>
           </Link>
-        </Button>
+          <Button
+            className="rounded-xl bg-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy-light"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            <Link href="/auth/login" className="flex items-center gap-2">
+              Kirish
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
       </nav>
 
       {/* Hero */}
-      <section className="relative z-10 flex flex-col items-start px-6 pt-16 pb-12 md:px-12 md:pt-24 lg:px-20 lg:pt-32">
-        <motion.h1
-          initial="hidden"
-          animate="visible"
-          custom={0}
-          variants={fadeUp}
-          className="max-w-3xl text-[2.5rem] leading-[1.1] font-extrabold tracking-tight text-navy md:text-[3.5rem] lg:text-[4.25rem]"
-          style={{ fontFamily: 'var(--font-heading)' }}
-        >
-          Maktablar nazorati —{' '}
-          <span className="text-teal">fuqarolar qo&apos;lida</span>
-        </motion.h1>
+      <AnimatedLandingHero stats={stats} />
 
-        <motion.p
-          initial="hidden"
-          animate="visible"
-          custom={1}
-          variants={fadeUp}
-          className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl"
-        >
-          Davlat va&apos;dalarini tekshiring. Haqiqiy holatni ko&apos;ring.
-          Shaffoflikni ta&apos;minlang.
-        </motion.p>
+      {/* How It Works — 3-step visual flow */}
+      <section className="relative z-10 px-6 py-16 md:px-12 lg:px-20 bg-muted/30 border-y border-border/40">
+        <div className="max-w-4xl mx-auto">
+          <p
+            className="text-[0.7rem] uppercase tracking-[0.15em] text-muted-foreground font-medium mb-2 text-center"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            Qanday ishlaydi
+          </p>
+          <h2
+            className="text-center text-[1.5rem] md:text-[1.75rem] font-bold text-navy mb-10"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            3 oddiy qadam
+          </h2>
 
-        {/* Stats Row */}
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          custom={2}
-          variants={fadeUp}
-          className="mt-10 flex flex-wrap gap-8 md:gap-12"
-        >
-          {[
-            { value: 800, suffix: '+', label: 'maktab' },
-            { value: 1400, suffix: '+', label: "tekshiruv" },
-            { value: 12, suffix: '', label: 'tuman' },
-          ].map((stat) => (
-            <div key={stat.label} className="flex flex-col">
-              <span
-                className="text-3xl font-extrabold text-navy md:text-4xl"
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+            {[
+              {
+                step: '01',
+                icon: <MapPin className="h-6 w-6" />,
+                title: 'Maktabni toping',
+                desc: "Xaritadan yoki ro'yxatdan o'z hududingizdagi maktabni tanlang",
+                color: 'text-teal',
+                bg: 'bg-teal/10',
+              },
+              {
+                step: '02',
+                icon: <Camera className="h-6 w-6" />,
+                title: 'Tekshiring va suratga oling',
+                desc: "Va'da qilingan ishlar bajarilganmi? Holatni suratga oling va xabar bering",
+                color: 'text-amber',
+                bg: 'bg-amber/10',
+              },
+              {
+                step: '03',
+                icon: <CheckCircle2 className="h-6 w-6" />,
+                title: 'Natijani ko\'ring',
+                desc: "Dashboard real vaqtda yangilanadi. Hamma bir xil haqiqatni ko'radi",
+                color: 'text-emerald',
+                bg: 'bg-emerald/10',
+              },
+            ].map((item, i) => (
+              <div key={item.step} className="relative text-center md:text-left">
+                {/* Connector line between steps (desktop only) */}
+                {i < 2 && (
+                  <div className="hidden md:block absolute top-8 -right-4 w-8 border-t-2 border-dashed border-border" />
+                )}
+                <div className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl ${item.bg} ${item.color} mb-4`}>
+                  {item.icon}
+                </div>
+                <p className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-wider mb-1">{item.step}</p>
+                <h3
+                  className="text-[1.05rem] font-bold text-navy mb-2"
+                  style={{ fontFamily: 'var(--font-heading)' }}
+                >
+                  {item.title}
+                </h3>
+                <p className="text-[0.85rem] text-muted-foreground leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link href="/auth/login">
+              <Button
+                size="lg"
+                className="rounded-2xl bg-navy text-white px-8 h-14 text-[0.95rem] font-semibold shadow-lg shadow-navy/20 hover:bg-navy-light hover:shadow-xl"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
-                <AnimatedNumber target={stat.value} suffix={stat.suffix} />
-              </span>
-              <span className="mt-1 text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                {stat.label}
-              </span>
-            </div>
-          ))}
-        </motion.div>
+                Hozir boshlash
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </div>
       </section>
 
-      {/* Entry Cards - simple CSS animation instead of per-card Framer Motion */}
-      <section className="relative z-10 px-6 pb-20 md:px-12 lg:px-20">
-        <div className="grid gap-4 md:grid-cols-3 md:gap-6 max-w-4xl">
-          {[
-            {
-              icon: <User className="h-5 w-5" />,
-              title: 'Fuqaro',
-              description: 'Maktabni tekshiring',
-              href: '/auth/login?role=citizen',
-              borderColor: 'border-l-teal',
-              iconBg: 'bg-teal/10 text-teal',
-            },
-            {
-              icon: <Landmark className="h-5 w-5" />,
-              title: 'Davlat',
-              description: 'Hisobotlarni ko\'ring',
-              href: '/auth/login?role=government',
-              borderColor: 'border-l-amber',
-              iconBg: 'bg-amber/10 text-amber',
-            },
-            {
-              icon: <BarChart3 className="h-5 w-5" />,
-              title: 'Jamoatchilik',
-              description: 'Ochiq dashboard',
-              href: '/dashboard',
-              borderColor: 'border-l-emerald',
-              iconBg: 'bg-emerald/10 text-emerald',
-            },
-          ].map((card, i) => (
-            <div
-              key={card.title}
-              className="animate-in fade-in slide-in-from-bottom-4"
-              style={{ animationDelay: `${300 + i * 100}ms`, animationFillMode: 'both' }}
-            >
+      {/* Zarina's Story */}
+      <section className="relative z-10 px-6 py-16 md:px-12 lg:px-20">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Story card */}
+            <div className="rounded-2xl bg-navy p-8 md:p-10 text-white relative overflow-hidden">
+              <div className="pointer-events-none absolute -bottom-16 -right-16 h-[200px] w-[200px] rounded-full bg-teal opacity-[0.08] blur-[60px]" />
+              <p className="text-[0.7rem] uppercase tracking-[0.15em] text-teal-light font-medium mb-4">Haqiqiy hikoya</p>
+              <blockquote
+                className="text-[1.15rem] md:text-[1.3rem] font-semibold leading-snug mb-4"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                &ldquo;Davlat maktabimizdagi hojatxonalarni ta&apos;mirlab berishga va&apos;da bergan. Ikki oy o&apos;tdi. Sovun idishlari bo&apos;sh, unitaz qopqoqlari singan.&rdquo;
+              </blockquote>
+              <p className="text-white/60 text-[0.85rem]">
+                — Zarina, 45-maktab o&apos;qituvchisi
+              </p>
+            </div>
+
+            {/* Solution */}
+            <div>
+              <h2
+                className="text-[1.35rem] md:text-[1.5rem] font-bold text-navy mb-4"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                Zarinaga minbar beryapmiz
+              </h2>
+              <div className="space-y-3">
+                {[
+                  { emoji: '📱', text: 'Telefonini ochadi' },
+                  { emoji: '📷', text: 'Singan o\'rindiqni suratga oladi' },
+                  { emoji: '⚡', text: '10 soniyada xabar beradi' },
+                  { emoji: '📊', text: 'Buni ommaviy dashboardda ko\'radi' },
+                  { emoji: '✅', text: 'Kimdir haqiqatan ham o\'qiyotganini biladi' },
+                ].map((item) => (
+                  <div key={item.text} className="flex items-center gap-3">
+                    <span className="text-lg">{item.emoji}</span>
+                    <span className="text-[0.9rem] text-foreground">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6">
+                <Link href="/dashboard">
+                  <Button variant="outline" className="rounded-xl text-teal border-teal/30 hover:bg-teal/5 gap-2">
+                    <BarChart3 className="h-4 w-4" />
+                    Ochiq dashboardni ko&apos;rish
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Entry Cards */}
+      <section className="relative z-10 px-6 pb-16 md:px-12 lg:px-20">
+        <div className="max-w-4xl mx-auto">
+          <p
+            className="text-[0.7rem] uppercase tracking-[0.15em] text-muted-foreground font-medium mb-4 text-center"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            Platformaga kirish
+          </p>
+          <div className="grid gap-4 md:grid-cols-3 md:gap-6">
+            {[
+              {
+                icon: <User className="h-5 w-5" />,
+                title: 'Fuqaro',
+                description: 'Maktabni tekshiring',
+                href: '/auth/login?role=citizen',
+                borderColor: 'border-l-teal',
+                iconBg: 'bg-teal/10 text-teal',
+              },
+              {
+                icon: <Landmark className="h-5 w-5" />,
+                title: 'Davlat',
+                description: 'Hisobotlarni ko\'ring',
+                href: '/auth/login?role=government',
+                borderColor: 'border-l-amber',
+                iconBg: 'bg-amber/10 text-amber',
+              },
+              {
+                icon: <BarChart3 className="h-5 w-5" />,
+                title: 'Jamoatchilik',
+                description: 'Ochiq dashboard',
+                href: '/dashboard',
+                borderColor: 'border-l-emerald',
+                iconBg: 'bg-emerald/10 text-emerald',
+              },
+            ].map((card) => (
               <Link
+                key={card.title}
                 href={card.href}
                 className={`glass-card group flex flex-col gap-4 rounded-2xl border-l-4 ${card.borderColor} p-6 transition-all duration-300 hover:-translate-y-1`}
               >
@@ -183,21 +269,21 @@ export default function Home() {
                   <ArrowRight className="h-4 w-4" />
                 </div>
               </Link>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="relative z-10 px-6 pb-8 md:px-12 lg:px-20">
-        <div className="border-t border-border pt-6">
+        <div className="max-w-4xl mx-auto border-t border-border pt-6">
           <p className="text-xs text-muted-foreground">
-            Real Holat &copy; 2026. Hackathon loyihasi.
+            Real Holat &copy; 2026. Fuqarolar ishtirokidagi monitoring platformasi.
           </p>
         </div>
       </footer>
 
-      {/* Decorative gradient orb */}
+      {/* Decorative gradient orbs */}
       <div className="pointer-events-none absolute -top-40 right-0 h-[600px] w-[600px] rounded-full bg-teal opacity-[0.04] blur-[120px]" />
       <div className="pointer-events-none absolute -bottom-60 -left-40 h-[500px] w-[500px] rounded-full bg-amber opacity-[0.05] blur-[100px]" />
     </div>
