@@ -4,21 +4,18 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
 import { motion } from 'framer-motion'
 import {
   Loader2,
-  Rocket,
   Landmark,
   LogIn,
   ArrowRight,
   Eye,
   EyeOff,
   ShieldCheck,
+  Users,
 } from 'lucide-react'
 
 export default function LoginPage() {
@@ -70,185 +67,233 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-[var(--bg)] px-4 py-8">
-      {/* Subtle background pattern */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-[var(--primary-deep)] opacity-[0.03] blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-[var(--success)] opacity-[0.04] blur-3xl" />
-      </div>
+    <div className="flex min-h-dvh">
+      {/* LEFT HALF - Dark navy branding panel (hidden on mobile) */}
+      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-navy bg-topo-dark p-12 lg:flex">
+        {/* Gradient overlays */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-navy via-navy-light/80 to-navy" />
+        <div className="pointer-events-none absolute -bottom-32 -right-32 h-[400px] w-[400px] rounded-full bg-teal opacity-[0.08] blur-[100px]" />
+        <div className="pointer-events-none absolute -top-20 -left-20 h-[300px] w-[300px] rounded-full bg-amber opacity-[0.06] blur-[80px]" />
 
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="relative w-full max-w-md"
-      >
-        {/* Logo / Title */}
-        <div className="mb-8 text-center">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--primary-deep)] shadow-lg shadow-[var(--primary-deep)]/20"
-          >
-            <ShieldCheck className="h-8 w-8 text-white" />
-          </motion.div>
-          <h1 className="text-[2rem] font-bold tracking-tight text-[var(--primary-deep)]">
-            Real Holat
-          </h1>
-          <p className="mt-1 text-base text-[var(--muted)]">
-            Fuqarolar monitoring platformasi
-          </p>
+        {/* Wordmark */}
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal/20">
+              <ShieldCheck className="h-5 w-5 text-teal-light" />
+            </div>
+            <span
+              className="text-2xl font-bold tracking-tight text-white"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              Real Holat
+            </span>
+          </div>
         </div>
 
-        {/* Main Card */}
-        <Card className="shadow-xl shadow-black/5 border-0 ring-1 ring-black/[0.06]">
-          <CardContent className="space-y-6 p-6 pt-6">
-            {/* Demo Section */}
-            <div className="space-y-3">
-              <p className="text-center text-sm font-medium text-[var(--muted)] uppercase tracking-wider">
-                Tezkor kirish
-              </p>
+        {/* Mission quote */}
+        <div className="relative z-10 max-w-md">
+          <blockquote
+            className="text-2xl font-semibold leading-snug text-white/90 md:text-3xl"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            &ldquo;Shaffoflik — bu davlat va fuqaro o&apos;rtasidagi ishonch
+            ko&apos;prigi.&rdquo;
+          </blockquote>
+          <p className="mt-4 text-base text-white/50">
+            Har bir fuqaroning ovozi muhim.
+          </p>
 
-              {/* Citizen Demo Button */}
-              <motion.div whileTap={{ scale: 0.98 }}>
-                <button
-                  onClick={() => handleDemoLogin('citizen')}
-                  disabled={loading !== null}
-                  className="group relative flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 text-[1.05rem] font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:shadow-xl hover:shadow-emerald-500/30 hover:brightness-105 active:translate-y-px disabled:opacity-60 disabled:pointer-events-none"
-                >
-                  {loading === 'citizen' ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <>
-                      <Rocket className="h-5 w-5" />
-                      <span>Demo rejimida kirish</span>
-                      <ArrowRight className="h-4 w-4 ml-auto opacity-60 transition-transform group-hover:translate-x-1" />
-                    </>
-                  )}
-                </button>
-              </motion.div>
-
-              {/* Government Demo Button */}
-              <motion.div whileTap={{ scale: 0.98 }}>
-                <button
-                  onClick={() => handleDemoLogin('government')}
-                  disabled={loading !== null}
-                  className="group relative flex h-14 w-full items-center justify-center gap-3 rounded-xl border-2 border-[var(--primary-deep)]/20 bg-[var(--primary-deep)]/5 px-6 text-[1.05rem] font-semibold text-[var(--primary-deep)] transition-all hover:border-[var(--primary-deep)]/30 hover:bg-[var(--primary-deep)]/10 active:translate-y-px disabled:opacity-60 disabled:pointer-events-none"
-                >
-                  {loading === 'government' ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <>
-                      <Landmark className="h-5 w-5" />
-                      <span>Davlat xodimi sifatida kirish</span>
-                      <ArrowRight className="h-4 w-4 ml-auto opacity-60 transition-transform group-hover:translate-x-1" />
-                    </>
-                  )}
-                </button>
-              </motion.div>
+          {/* Floating stat pills */}
+          <div className="mt-8 flex flex-wrap gap-3">
+            <div className="rounded-full bg-white/10 px-4 py-2 text-sm font-medium text-white/80 backdrop-blur-sm">
+              800+ maktab tekshirildi
             </div>
-
-            {/* Divider */}
-            <div className="relative flex items-center py-1">
-              <Separator className="flex-1" />
-              <span className="mx-4 text-sm text-[var(--muted)] select-none">yoki</span>
-              <Separator className="flex-1" />
+            <div className="rounded-full bg-teal/15 px-4 py-2 text-sm font-medium text-teal-light backdrop-blur-sm">
+              12 tuman qamrab olingan
             </div>
+            <div className="rounded-full bg-amber/15 px-4 py-2 text-sm font-medium text-amber backdrop-blur-sm">
+              1400+ tekshiruv
+            </div>
+          </div>
+        </div>
 
-            {/* Login Form */}
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="email@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading !== null}
-                  className="h-12 rounded-xl px-4 text-base"
-                />
-              </div>
+        {/* Bottom */}
+        <div className="relative z-10">
+          <p className="text-xs text-white/30">
+            Real Holat &copy; 2026
+          </p>
+        </div>
+      </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">
-                  Parol
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Parolingizni kiriting"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={loading !== null}
-                    className="h-12 rounded-xl px-4 pr-12 text-base"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-foreground transition-colors"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
+      {/* RIGHT HALF - Login form */}
+      <div className="flex w-full flex-col items-center justify-center px-6 py-12 lg:w-1/2 lg:px-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full max-w-md"
+        >
+          {/* Mobile-only branded header */}
+          <div className="mb-8 flex items-center gap-2 lg:hidden">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy">
+              <ShieldCheck className="h-4 w-4 text-teal-light" />
+            </div>
+            <span
+              className="text-lg font-bold text-navy"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              Real Holat
+            </span>
+          </div>
 
-              {/* Error message */}
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600 ring-1 ring-red-100"
-                >
-                  {error}
-                </motion.div>
-              )}
+          {/* Welcome */}
+          <h1
+            className="text-3xl font-extrabold tracking-tight text-navy md:text-4xl"
+            style={{ fontFamily: 'var(--font-heading)' }}
+          >
+            Xush kelibsiz
+          </h1>
+          <p className="mt-2 text-base text-muted-foreground">
+            Tizimga kirish uchun quyidagilardan birini tanlang
+          </p>
 
-              <motion.div whileTap={{ scale: 0.98 }}>
-                <Button
-                  type="submit"
-                  disabled={loading !== null}
-                  className="h-14 w-full rounded-xl text-[1.05rem] font-semibold shadow-md shadow-black/10 hover:shadow-lg transition-all"
-                >
-                  {loading === 'login' ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <>
-                      <LogIn className="h-5 w-5 mr-2" />
-                      Kirish
-                    </>
-                  )}
-                </Button>
-              </motion.div>
-            </form>
-
-            {/* Sign up link */}
-            <p className="text-center text-sm text-[var(--muted)]">
-              Hisobingiz yo&apos;qmi?{' '}
-              <Link
-                href="/auth/signup"
-                className="font-semibold text-[var(--primary-deep)] underline-offset-4 hover:underline transition-colors"
+          {/* Demo Buttons */}
+          <div className="mt-8 space-y-3">
+            <motion.div whileTap={{ scale: 0.98 }}>
+              <button
+                onClick={() => handleDemoLogin('citizen')}
+                disabled={loading !== null}
+                className="group relative flex h-14 w-full items-center gap-3 rounded-2xl bg-gradient-to-r from-teal to-teal-light px-6 text-base font-semibold text-white shadow-lg shadow-teal/25 transition-all hover:shadow-xl hover:shadow-teal/30 hover:brightness-105 active:translate-y-px disabled:pointer-events-none disabled:opacity-60"
+                style={{ fontFamily: 'var(--font-heading)' }}
               >
-                Ro&apos;yxatdan o&apos;tish
-              </Link>
-            </p>
-          </CardContent>
-        </Card>
+                {loading === 'citizen' ? (
+                  <Loader2 className="mx-auto h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <Users className="h-5 w-5 shrink-0" />
+                    <span>Fuqaro sifatida sinab ko&apos;ring</span>
+                    <ArrowRight className="ml-auto h-4 w-4 opacity-60 transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
+              </button>
+            </motion.div>
 
-        {/* Footer */}
-        <p className="mt-6 text-center text-xs text-[var(--muted)]/60">
-          Real Holat &copy; 2026. Barcha huquqlar himoyalangan.
-        </p>
-      </motion.div>
+            <motion.div whileTap={{ scale: 0.98 }}>
+              <button
+                onClick={() => handleDemoLogin('government')}
+                disabled={loading !== null}
+                className="group relative flex h-14 w-full items-center gap-3 rounded-2xl border-2 border-navy/20 bg-navy/5 px-6 text-base font-semibold text-navy transition-all hover:border-navy/30 hover:bg-navy/10 active:translate-y-px disabled:pointer-events-none disabled:opacity-60"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {loading === 'government' ? (
+                  <Loader2 className="mx-auto h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <Landmark className="h-5 w-5 shrink-0" />
+                    <span>Davlat xodimi</span>
+                    <ArrowRight className="ml-auto h-4 w-4 opacity-60 transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
+              </button>
+            </motion.div>
+          </div>
+
+          {/* Divider */}
+          <div className="relative my-8 flex items-center">
+            <div className="flex-1 border-t border-border" />
+            <span className="mx-4 select-none text-sm text-muted-foreground">yoki</span>
+            <div className="flex-1 border-t border-border" />
+          </div>
+
+          {/* Login Form */}
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-semibold text-foreground">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="email@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading !== null}
+                className="h-[52px] rounded-xl border-border px-4 text-base transition-colors focus:border-teal focus:ring-teal"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-semibold text-foreground">
+                Parol
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Parolingizni kiriting"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading !== null}
+                  className="h-[52px] rounded-xl border-border px-4 pr-12 text-base transition-colors focus:border-teal focus:ring-teal"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                  tabIndex={-1}
+                  aria-label={showPassword ? "Parolni yashirish" : "Parolni ko'rsatish"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Error message */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-xl bg-coral/10 px-4 py-3 text-sm font-medium text-coral ring-1 ring-coral/20"
+              >
+                {error}
+              </motion.div>
+            )}
+
+            <motion.div whileTap={{ scale: 0.98 }}>
+              <button
+                type="submit"
+                disabled={loading !== null}
+                className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-navy text-base font-semibold text-white shadow-md shadow-navy/20 transition-all hover:bg-navy-light hover:shadow-lg active:translate-y-px disabled:pointer-events-none disabled:opacity-60"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {loading === 'login' ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <LogIn className="h-5 w-5" />
+                    Kirish
+                  </>
+                )}
+              </button>
+            </motion.div>
+          </form>
+
+          {/* Sign up link */}
+          <p className="mt-8 text-center text-sm text-muted-foreground">
+            Hisobingiz yo&apos;qmi?{' '}
+            <Link
+              href="/auth/signup"
+              className="font-semibold text-teal underline-offset-4 transition-colors hover:underline"
+            >
+              Ro&apos;yxatdan o&apos;tish
+            </Link>
+          </p>
+        </motion.div>
+      </div>
     </div>
   )
 }

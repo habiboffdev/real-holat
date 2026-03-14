@@ -154,11 +154,11 @@ export default function SignupPage() {
   const schools = selectedDistrict ? (placeholderSchools[selectedDistrict] || []) : []
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-[var(--bg)] px-4 py-8">
+    <div className="flex min-h-dvh items-center justify-center bg-topo px-4 py-8">
       {/* Subtle background pattern */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-[var(--primary-deep)] opacity-[0.03] blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-[var(--success)] opacity-[0.04] blur-3xl" />
+        <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-navy opacity-[0.03] blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-emerald opacity-[0.04] blur-3xl" />
       </div>
 
       <motion.div
@@ -173,14 +173,14 @@ export default function SignupPage() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.4 }}
-            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--primary-deep)] shadow-lg shadow-[var(--primary-deep)]/20"
+            className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-navy shadow-lg shadow-navy/20"
           >
             <ShieldCheck className="h-8 w-8 text-white" />
           </motion.div>
-          <h1 className="text-[1.75rem] font-bold tracking-tight text-[var(--primary-deep)]">
+          <h1 className="text-[1.75rem] font-bold tracking-tight text-navy">
             Ro&apos;yxatdan o&apos;tish
           </h1>
-          <p className="mt-1 text-base text-[var(--muted)]">
+          <p className="mt-1 text-base text-muted-foreground">
             Real Holat platformasiga qo&apos;shiling
           </p>
         </div>
@@ -192,7 +192,7 @@ export default function SignupPage() {
               key={i}
               className={`h-2 rounded-full transition-all duration-300 ${
                 i + 1 === step
-                  ? 'w-8 bg-[var(--primary-deep)]'
+                  ? 'w-8 bg-navy'
                   : i + 1 < step
                   ? 'w-8 bg-emerald-500'
                   : 'w-2 bg-black/10'
@@ -220,7 +220,7 @@ export default function SignupPage() {
                     <h2 className="text-lg font-semibold text-foreground">
                       Shaxsiy ma&apos;lumotlar
                     </h2>
-                    <p className="text-sm text-[var(--muted)]">
+                    <p className="text-sm text-muted-foreground">
                       Asosiy ma&apos;lumotlaringizni kiriting
                     </p>
                   </div>
@@ -264,7 +264,7 @@ export default function SignupPage() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-foreground transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                         tabIndex={-1}
                       >
                         {showPassword ? (
@@ -313,7 +313,7 @@ export default function SignupPage() {
                     <h2 className="text-lg font-semibold text-foreground">
                       Rolni tanlang
                     </h2>
-                    <p className="text-sm text-[var(--muted)]">
+                    <p className="text-sm text-muted-foreground">
                       Platformadan qanday foydalanmoqchisiz?
                     </p>
                   </div>
@@ -333,7 +333,7 @@ export default function SignupPage() {
                         className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors ${
                           selectedRole === 'citizen'
                             ? 'bg-emerald-500 text-white'
-                            : 'bg-muted text-[var(--muted)]'
+                            : 'bg-muted text-muted-foreground'
                         }`}
                       >
                         <User className="h-6 w-6" />
@@ -345,7 +345,7 @@ export default function SignupPage() {
                             <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                           )}
                         </div>
-                        <p className="mt-0.5 text-sm text-[var(--muted)]">
+                        <p className="mt-0.5 text-sm text-muted-foreground">
                           Men maktabni tekshirmoqchiman
                         </p>
                       </div>
@@ -357,15 +357,15 @@ export default function SignupPage() {
                       onClick={() => setSelectedRole('government')}
                       className={`group relative flex items-start gap-4 rounded-xl border-2 p-5 text-left transition-all ${
                         selectedRole === 'government'
-                          ? 'border-[var(--primary-deep)] bg-[var(--primary-deep)]/5 ring-2 ring-[var(--primary-deep)]/20'
+                          ? 'border-navy bg-navy/5 ring-2 ring-navy/20'
                           : 'border-black/[0.08] hover:border-black/20 hover:bg-muted/30'
                       }`}
                     >
                       <div
                         className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors ${
                           selectedRole === 'government'
-                            ? 'bg-[var(--primary-deep)] text-white'
-                            : 'bg-muted text-[var(--muted)]'
+                            ? 'bg-navy text-white'
+                            : 'bg-muted text-muted-foreground'
                         }`}
                       >
                         <Landmark className="h-6 w-6" />
@@ -374,10 +374,10 @@ export default function SignupPage() {
                         <div className="flex items-center gap-2">
                           <span className="text-base font-semibold">Davlat xodimi</span>
                           {selectedRole === 'government' && (
-                            <CheckCircle2 className="h-5 w-5 text-[var(--primary-deep)]" />
+                            <CheckCircle2 className="h-5 w-5 text-navy" />
                           )}
                         </div>
-                        <p className="mt-0.5 text-sm text-[var(--muted)]">
+                        <p className="mt-0.5 text-sm text-muted-foreground">
                           Men hisobotlarni ko&apos;rmoqchiman
                         </p>
                       </div>
@@ -443,14 +443,14 @@ export default function SignupPage() {
                     <h2 className="text-lg font-semibold text-foreground">
                       Maktabni tanlang
                     </h2>
-                    <p className="text-sm text-[var(--muted)]">
+                    <p className="text-sm text-muted-foreground">
                       Qaysi maktabni tekshirmoqchisiz?
                     </p>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="district" className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-[var(--muted)]" />
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
                       Tuman
                     </Label>
                     <div className="relative">
@@ -470,7 +470,7 @@ export default function SignupPage() {
                           </option>
                         ))}
                       </select>
-                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)]">
+                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
@@ -480,7 +480,7 @@ export default function SignupPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="school" className="flex items-center gap-2">
-                      <School className="h-4 w-4 text-[var(--muted)]" />
+                      <School className="h-4 w-4 text-muted-foreground" />
                       Maktab
                     </Label>
                     <div className="relative">
@@ -502,7 +502,7 @@ export default function SignupPage() {
                           </option>
                         ))}
                       </select>
-                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)]">
+                      <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
@@ -556,18 +556,18 @@ export default function SignupPage() {
         </Card>
 
         {/* Login link */}
-        <p className="mt-6 text-center text-sm text-[var(--muted)]">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           Hisobingiz bormi?{' '}
           <Link
             href="/auth/login"
-            className="font-semibold text-[var(--primary-deep)] underline-offset-4 hover:underline transition-colors"
+            className="font-semibold text-navy underline-offset-4 hover:underline transition-colors"
           >
             Kirish
           </Link>
         </p>
 
         {/* Footer */}
-        <p className="mt-4 text-center text-xs text-[var(--muted)]/60">
+        <p className="mt-4 text-center text-xs text-muted-foreground/60">
           Real Holat &copy; 2026. Barcha huquqlar himoyalangan.
         </p>
       </motion.div>
